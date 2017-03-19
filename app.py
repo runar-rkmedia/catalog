@@ -1,12 +1,14 @@
 """Udacity assignment for creating a catalog."""
 
-from flask import Flask, flash, session, redirect, url_for, request, render_template
-app = Flask(__name__)
+from config import configure_app
+from flask import (Flask, flash, session, redirect,
+                   url_for, request, render_template)
 
-# TODO: Move to config-file
-# In production, a truly random key shoud be stored in a production-config,
-# which will override this. For dev-purposes, just use 'dev' as secret key.
-app.secret_key = 'dev'
+
+app = Flask(__name__, instance_relative_config=True)
+# app.config.from_object(config[config_name])
+# app.config.from_pyfile('config.cfg', silent=True)
+configure_app(app)
 
 
 @app.route('/login', methods=['GET', 'POST'])
