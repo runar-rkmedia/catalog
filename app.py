@@ -1,26 +1,37 @@
 """Udacity assignment for creating a catalog."""
 
-from flask import Flask, request, render_template
+from flask import Flask, session, redirect, url_for, request, render_template
 app = Flask(__name__)
+
+# TODO: Move to config-file
+# In production, a truly random key shoud be stored in a production-config,
+# which will override this. For dev-purposes, just use 'dev' as secret key.
+app.secret_key = 'dev'
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Handle user login."""
     if request.method == 'POST':
-        return 'do_the_login()'
-    else:
-        return 'show_the_login_form()'
+        session['username'] = request.form['username']
+        return redirect(url_for('index'))
+    return '''
+        <form method="post">
+            <p><input type=text name=username>
+            <p><input type=submit value=Login>
+        </form>
+    '''
 
 
 @app.route('/logout')
 def logout():
     """Handle user logout."""
-    return 'logout'
+    session.pop('username', None)
+    return redirect(url_for('index'))
 
 
 @app.route('/')
-def view_home():
+def index():
     """View for home."""
     return render_template('catalogs.html')
 
