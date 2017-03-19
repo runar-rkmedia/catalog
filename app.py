@@ -1,6 +1,6 @@
 """Udacity assignment for creating a catalog."""
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 app = Flask(__name__)
 
 
@@ -22,7 +22,7 @@ def logout():
 @app.route('/')
 def view_home():
     """View for home."""
-    return 'Hello, World!'
+    return render_template('catalogs.html')
 
 
 @app.route('/catalog.json')
@@ -65,3 +65,9 @@ def view_catagory_edit_item(catagory, item):
 def view_catagory_delete_item(catagory, item):
     """View for deleting an item under a catagory."""
     return 'Deleting item {!s} from {!s}'.format(item, catagory)
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    """View for pages not found."""
+    return render_template('page_not_found.html'), 404
