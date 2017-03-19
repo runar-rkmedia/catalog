@@ -1,0 +1,19 @@
+<!doctype html>
+<title>Catalogs</title>
+<div class="row header">
+<div class="three columns login-buttons">
+  <a href="/login">Login</a>
+  <a href="/logout">Logout</a>
+</div>
+</div>
+
+<div class="row flash-messages">{% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}</div>
+{% block body %}{% endblock %}

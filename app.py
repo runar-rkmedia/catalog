@@ -1,6 +1,6 @@
 """Udacity assignment for creating a catalog."""
 
-from flask import Flask, session, redirect, url_for, request, render_template
+from flask import Flask, flash, session, redirect, url_for, request, render_template
 app = Flask(__name__)
 
 # TODO: Move to config-file
@@ -12,15 +12,12 @@ app.secret_key = 'dev'
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Handle user login."""
+    error = None
     if request.method == 'POST':
         session['username'] = request.form['username']
+        flash('You were successfully logged in')
         return redirect(url_for('index'))
-    return '''
-        <form method="post">
-            <p><input type=text name=username>
-            <p><input type=submit value=Login>
-        </form>
-    '''
+    return render_template('login.html', error=error)
 
 
 @app.route('/logout')
