@@ -2,8 +2,12 @@
 <title>Catalogs</title>
 <div class="row header">
 <div class="three columns login-buttons">
-  <a href="/login">Login</a>
+  {% if session['username'] %}
   <a href="/logout">Logout</a>
+  {% else %}
+  <a href="/login">Login</a>
+  <a href="/signup">Signup</a>
+  {% endif %}
 </div>
 </div>
 
