@@ -16,7 +16,7 @@ class DevelopmentConfig(BaseConfig):
     """Configuration for development."""
     DEBUG = True
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///multi.db'
     SECRET_KEY = 'dev'
 
 
