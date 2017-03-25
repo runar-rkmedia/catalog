@@ -1,0 +1,56 @@
+body {
+  font-family: 'Raleway', sans-serif; }
+
+  form#login-form {
+    background: #fff;
+    width: 35em;
+    margin: 2em auto;
+    overflow: hidden;
+    position: relative; }
+
+    .logo:before {
+      content: 'myLogo'; }
+
+div.connect {
+  color: gray;
+  font-size: 1.1em; }
+
+  .oauth_buttons a {
+    display: flex;
+    align-items: center;
+    font-size: 1.2em;
+    text-decoration: none;
+    color: white;
+    width: 18em;
+    height: 3em;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 25, 48, 0.75); }
+    .oauth_buttons a .connect-logo {
+      display: inline;
+      text-align: center;
+      width: 50px;
+      padding: 0.3em 0;
+      font-size: 24pt;
+      margin-right: 0.3em;
+      border-right: 2px solid rgba(0, 25, 48, 0.75); }
+      .oauth_buttons a .sign-in-with-text {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+        text-align: left; }
+
+a.facebook {
+  background: #3a589a;
+  margin-top: 0.8em; }
+  a.facebook:hover {
+    background: rgba(58, 88, 154, 0.8); }
+
+a.twitter {
+  background: #4099ff; }
+  a.twitter:hover {
+    background: rgba(64, 153, 255, 0.8); }
+
+a.github {
+  background: #444444; }
+  a.github:hover {
+    background: rgba(68, 68, 68, 0.8); }

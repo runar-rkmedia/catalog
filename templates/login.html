@@ -1,10 +1,33 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
 {% block body %}
-<form method="post">
-    <p><input type=text name=username>
-    <p><input type=password name=Password>
-    <p><input type=submit value=Login>
+    <form action="#" id="login-form">
+        <div class="heading">Login to
+            <span class="logo"></span>
+        </div>
+        <div class="oauth_buttons">
+            <div class="connect">Connect with</div>
+            <a href="" class="facebook">
+                <span class="connect-logo">
+                    <i class="fa fa-facebook" aria-hidden="true"></i>
+                </span>
+                <span>Sign in with Facebook</span>
+            </a>
+            <br/>
+            <a href="" class="twitter">
+                <span class="connect-logo">
+                    <i class="fa fa-twitter" aria-hidden="true"></i>
+                </span>
+                <span>Sign in with Twitter</span>
+    </a>
+    <br/>
+    <a href="" class="github">
+        <span class="connect-logo">
+            <i class="fa fa-github" aria-hidden="true"></i>
+        </span>
+        <span>Sign in with GitHub</span>
+    </a>
+</div>
 </form>
 {{ session['username'] }}
 {% endblock %}

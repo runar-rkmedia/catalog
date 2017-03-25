@@ -29,6 +29,7 @@ from flask_login import (
     logout_user
     )
 from models import User, OAuth, db
+from flask_scss import Scss
 
 
 app = Flask(__name__, instance_relative_config=True)
@@ -108,10 +109,14 @@ def logout():
     return redirect(url_for("index"))
 
 
+@app.route('/login')
+def login():
+    """View for login."""
+    return render_template('login.html')
+
 @app.route('/')
 def index():
     """View for home."""
-    print(app.config["SQLALCHEMY_DATABASE_URI"])
     return render_template('catalogs.html')
 
 
@@ -175,3 +180,6 @@ if __name__ == "__main__":
             print("Database tables created")
     else:
         app.run(debug=True)
+        # setup scss-folders
+
+Scss(app, static_dir='static/css/', asset_dir='assets/scss/')

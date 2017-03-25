@@ -1,0 +1,78 @@
+body {
+    font-family: 'Raleway', sans-serif;
+}
+
+form#login-form {
+    background: #fff;
+    width: 35em;
+    margin: 2em auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.logo {
+    &:before {
+        content: 'myLogo';
+    }
+}
+
+div.connect {
+    color: gray;
+    font-size: 1.1em;
+}
+
+.oauth_buttons a {
+    display: flex;
+    align-items: center;
+    font-size: 1.2em;
+    text-decoration: none;
+    color: white;
+    width: 18em;
+    height: 3em;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 25, 48, 0.75); // vertical-align: baseline;
+
+    .connect-logo {
+        display: inline;
+        // float: left;
+        text-align: center;
+        width: 50px;
+        padding: 0.3em 0;
+        font-size: 24pt;
+        margin-right: 0.3em;
+        border-right: 2px solid rgba(0, 25, 48, 0.75);
+    }
+
+    .sign-in-with-text {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+        text-align: left;
+        // padding:  0em 0.3em 0 0;
+    }
+}
+
+a.facebook {
+    background: #3a589a;
+    margin-top: 0.8em;
+
+    &:hover {
+        background: rgba(#3a589a, 0.8);
+    }
+}
+
+a.twitter {
+    background: #4099ff;
+
+    &:hover {
+        background: rgba(#4099ff, 0.8);
+    }
+}
+
+a.github {
+    background: #444444;
+
+    &:hover {
+        background: rgba(#444444, 0.8);
+    }
+}
