@@ -3,23 +3,54 @@
 from config import configure_app
 from flask import (Flask, flash, session, redirect,
                    url_for, request, render_template)
+from flask_dance.contrib.github import make_github_blueprint, github
+from database import db_session
+from models import User
 
 
 app = Flask(__name__, instance_relative_config=True)
-# app.config.from_object(config[config_name])
-# app.config.from_pyfile('config.cfg', silent=True)
 configure_app(app)
+
+# Add github-blueprint for oauth
+blueprint = make_github_blueprint(
+    client_id=app.config['GITHUB_CLIENT_ID'],
+    client_secret=app.config['GITHUB_CLIENT_SECRET'],
+)
+app.register_blueprint(blueprint, url_prefix="/login")
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Handle user login."""
+    # error = None
+    if not github.authorized:
+        return redirect(url_for("github.login"))
+    resp = github.get("/user")
+    assert resp.ok
+    return "You are @{login} on GitHub".format(login=resp.json()["login"])
+    # if request.method == 'POST':
+    #     session['username'] = request.form['username']
+    #     flash('You were successfully logged in')
+    #     return redirect(url_for('index'))
+    # return render_template('login.html', error=error)
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    """Handle user signup."""
+    print('ssfds')
     error = None
     if request.method == 'POST':
-        session['username'] = request.form['username']
-        flash('You were successfully logged in')
+        username = request.form['username']
+        full_name = request.form['full_name']
+        email = request.form['email']
+        # picture = request.form['picture']
+        u = User(username=username, full_name=full_name,
+                 email=email)
+        db_session.add(u)
+        db_session.commit()
         return redirect(url_for('index'))
-    return render_template('login.html', error=error)
+    return render_template('signup.html', error=error)
 
 
 @app.route('/logout')
@@ -81,3 +112,9 @@ def view_catagory_delete_item(catagory, item):
 def page_not_found(error):
     """View for pages not found."""
     return render_template('page_not_found.html'), 404
+
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    """Shutdown the database-session."""
+    db_session.remove()
