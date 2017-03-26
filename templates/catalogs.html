@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
 {% block body %}
-<h2>Catagories</h2>
+<h2 class="relative">Catagories</h2>
+<div class="add-catagory-button">
+<a href="{{url_for('view_catagory_new')}}"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+</div>
 
 {% if catagories %}
 <div class="catagories">
   {% for catagory in catagories %}
-  <div class="catagory")">
+  <div class="catagory" style="cursor: pointer;" onclick="window.location='{{url_for('view_catagory',catagory=catagory.name)}}';">
         {{ catagory.name }}
   </div>
   {% endfor %}</div>

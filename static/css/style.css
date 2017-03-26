@@ -10,23 +10,33 @@ body {
     .logo:before {
       content: 'myLogo'; }
 
-.catagory {
-  background-color: #266cac;
-  color: white;
-  text-align: center;
-  padding: 10px;
-  flex-grow: 1;
-  width: 25%;
-  border: 1px solid rgba(4, 40, 73, 0.55);
-  padding-top: 5%;
-  padding-bottom: 10%; }
-  @media (max-width: 700px) {
+.relative {
+  position: relative; }
+
+  .add-catagory-button {
+    position: absolute;
+    top: 5px;
+    right: 20px;
+    font-size: 3.6rem;
+    color: #266cac; }
+
     .catagory {
-      width: 33%;   }
+      background-color: #266cac;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      flex-grow: 1;
+      width: 25%;
+      border: 1px solid rgba(4, 40, 73, 0.55);
+      padding-top: 5%;
+      padding-bottom: 10%; }
+      @media (max-width: 700px) {
+        .catagory {
+          width: 33%;   }
 }
-    @media (max-width: 400px) {
-      .catagory {
-        width: 100%;   }
+        @media (max-width: 400px) {
+          .catagory {
+            width: 100%;   }
 }
 
 .catagory_desc {
