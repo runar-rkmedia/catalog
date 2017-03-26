@@ -2,9 +2,11 @@
 {% extends "base.html" %}
 {% block body %}
 <h2 class="relative">Catagories</h2>
+{% if current_user.is_authenticated %}
 <div class="add-catagory-button">
-<a href="{{url_for('view_catagory_new')}}"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+  <a href="{{url_for('view_catagory_new')}}"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
 </div>
+{% endif %}
 
 {% if catagories %}
 <div class="catagories">
