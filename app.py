@@ -11,6 +11,7 @@ from flask import (
     jsonify,
     render_template
 )
+from flask.ext.misaka import Misaka # noqa
 from sqlalchemy.orm.exc import NoResultFound
 from flask_dance.contrib.github import (
     make_github_blueprint,
@@ -29,7 +30,7 @@ from flask_login import (
     login_user,
     logout_user
 )
-from models import db, User, OAuth, Catagory
+from models import db, User, OAuth, Catagory, CatagoryItem
 from flask_scss import Scss
 
 
@@ -48,6 +49,8 @@ app.register_blueprint(blueprint, url_prefix="/login")
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
+
+Misaka(app)
 
 
 @login_manager.user_loader
@@ -123,8 +126,6 @@ def login():
 def index():
     """View for home."""
     catagories = Catagory.query.all()
-    for catagory in catagories:
-        print(catagory.name)
     return render_template('catalogs.html', catagories=catagories)
 
 
@@ -138,7 +139,10 @@ def json_catalog():
 @app.route('/catalog/<catagory>')
 def view_catagory(catagory):
     """View for catagories."""
-    return 'catagory {!s}'.format(catagory)
+    catagory = Catagory.query.filter_by(name=catagory).first()
+    items = CatagoryItem.query.filter_by(catagory_id=catagory.id).all()
+    print(items)
+    return render_template('catagory.html', catagory=catagory, items=items)
 
 
 @app.route('/new/catalog/catagory/', methods=['GET', 'POST'])
