@@ -121,7 +121,10 @@ def login():
 @app.route('/')
 def index():
     """View for home."""
-    return render_template('catalogs.html')
+    catagories = Catagory.query.all()
+    for catagory in catagories:
+        print(catagory.name)
+    return render_template('catalogs.html', catagories=catagories)
 
 
 @app.route('/catalog.json')
@@ -137,7 +140,7 @@ def view_catagory(catagory):
 
 
 @app.route('/new/catalog/catagory/', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def view_catagory_new():
     """View for creating a catagory."""
     error = ""

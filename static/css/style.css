@@ -10,33 +10,59 @@ body {
     .logo:before {
       content: 'myLogo'; }
 
-div.connect {
-  font-size: 1.1em; }
+.catagory {
+  background-color: #266cac;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  flex-grow: 1;
+  width: 25%;
+  border: 1px solid rgba(4, 40, 73, 0.55);
+  padding-top: 5%;
+  padding-bottom: 10%; }
+  @media (max-width: 700px) {
+    .catagory {
+      width: 33%;   }
+}
+    @media (max-width: 400px) {
+      .catagory {
+        width: 100%;   }
+}
 
-  .oauth_buttons a {
+.catagory_desc {
+  min-width: 100%; }
+
+  .catagories {
     display: flex;
-    align-items: center;
-    font-size: 1.2em;
-    text-decoration: none;
-    color: white;
-    width: 18em;
-    height: 3em;
-    border-radius: 10px;
-    border: 2px solid rgba(0, 25, 48, 0.75); }
-    .oauth_buttons a .connect-logo {
-      display: inline;
-      text-align: center;
-      width: 50px;
-      padding: 0.1em 0;
-      font-size: 24pt;
-      margin-right: 0.3em;
-      border-right: 2px solid rgba(0, 25, 48, 0.75); }
-      .oauth_buttons a .sign-in-with-text {
-        position: relative;
-        top: 50%;
-        transform: translateY(-50%);
-        text-align: left;
-        padding: 0em 0.3em 0 0; }
+    flex-wrap: wrap; }
+
+    div.connect {
+      font-size: 1.1em; }
+
+      .oauth_buttons a {
+        display: flex;
+        align-items: center;
+        font-size: 1.2em;
+        text-decoration: none;
+        color: white;
+        width: 18em;
+        height: 3em;
+        border-radius: 10px;
+        border: 2px solid rgba(0, 25, 48, 0.75); }
+        .oauth_buttons a .connect-logo {
+          display: inline;
+          text-align: center;
+          width: 50px;
+          padding: 0.1em 0;
+          font-size: 24pt;
+          margin-right: 0.3em;
+          border-right: 2px solid rgba(0, 25, 48, 0.75); }
+          .oauth_buttons a .sign-in-with-text {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: left;
+            padding: 0em 0.3em 0 0; }
 
 a.facebook {
   background: #3a589a;

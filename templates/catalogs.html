@@ -1,4 +1,14 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
 {% block body %}
+<h2>Catagories</h2>
+
+{% if catagories %}
+<div class="catagories">
+  {% for catagory in catagories %}
+  <div class="catagory")">
+        {{ catagory.name }}
+  </div>
+  {% endfor %}</div>
+{% endif %}
 {% endblock %}
