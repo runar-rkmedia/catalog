@@ -1,18 +1,16 @@
 body {
   font-family: 'Raleway', sans-serif; }
 
-  form#login-form {
-    background: #fff;
-    width: 35em;
-    margin: 2em auto;
-    overflow: hidden;
-    position: relative; }
+  .body-container {
+    background-color: #d6e7f6;
+    min-height: 70vh;
+    border: 1px solid #042645;
+    padding: 10px; }
 
     .logo:before {
       content: 'myLogo'; }
 
 div.connect {
-  color: gray;
   font-size: 1.1em; }
 
   .oauth_buttons a {
@@ -29,7 +27,7 @@ div.connect {
       display: inline;
       text-align: center;
       width: 50px;
-      padding: 0.3em 0;
+      padding: 0.1em 0;
       font-size: 24pt;
       margin-right: 0.3em;
       border-right: 2px solid rgba(0, 25, 48, 0.75); }
@@ -37,7 +35,8 @@ div.connect {
         position: relative;
         top: 50%;
         transform: translateY(-50%);
-        text-align: left; }
+        text-align: left;
+        padding: 0em 0.3em 0 0; }
 
 a.facebook {
   background: #3a589a;
