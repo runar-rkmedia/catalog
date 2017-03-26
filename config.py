@@ -18,6 +18,7 @@ class DevelopmentConfig(BaseConfig):
     TESTING = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///multi.db'
     SECRET_KEY = 'dev'
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 
 class TestingConfig(BaseConfig):
