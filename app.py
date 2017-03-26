@@ -8,17 +8,18 @@ from flask import (
     redirect,
     url_for,
     request,
+    jsonify,
     render_template
-    )
+)
 from sqlalchemy.orm.exc import NoResultFound
 from flask_dance.contrib.github import (
     make_github_blueprint,
     # github
-    )
+)
 from flask_dance.consumer.backend.sqla import (
     # OAuthConsumerMixin,
     SQLAlchemyBackend
-    )
+)
 from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import (
     LoginManager,
@@ -27,7 +28,7 @@ from flask_login import (
     login_required,
     login_user,
     logout_user
-    )
+)
 from models import db, User, OAuth, Catagory
 from flask_scss import Scss
 
@@ -61,7 +62,7 @@ blueprint.backend = SQLAlchemyBackend(
 
 
 @oauth_authorized.connect_via(blueprint)
-def github_logged_in(blueprint, token): # noqa
+def github_logged_in(blueprint, token):  # noqa
     """Create/login local user on successful OAuth login."""
     if not token:
         flash(
@@ -89,7 +90,7 @@ def github_logged_in(blueprint, token): # noqa
 
 
 @oauth_error.connect_via(blueprint)
-def github_error(blueprint, error, error_description=None, error_uri=None): # noqa
+def github_error(blueprint, error, error_description=None, error_uri=None):  # noqa
     """Notify on OAuth provider error."""
     msg = (
         "OAuth error from {name}! "
@@ -127,10 +128,11 @@ def index():
     return render_template('catalogs.html', catagories=catagories)
 
 
-@app.route('/catalog.json')
+@app.route('/json/catalog/catalog/')
 def json_catalog():
     """View for home."""
-    return 'Hello, World!'
+    catagories = Catagory.query.all()
+    return jsonify(catagories=[i.serialize for i in catagories])
 
 
 @app.route('/catalog/<catagory>')
@@ -143,7 +145,6 @@ def view_catagory(catagory):
 @login_required
 def view_catagory_new():
     """View for creating a catagory."""
-    error = ""
     if request.method == 'POST':
         print(current_user.id)
         catagory_name = request.form['catagory_name']

@@ -2,6 +2,7 @@
 
 # from sqlalchemy import Column, Integer, String
 # from database import Base
+from flask import jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_dance.consumer.backend.sqla import (
     OAuthConsumerMixin,
@@ -57,3 +58,13 @@ class Catagory(db.Model):
         )
         db.session.add(cat)
         db.session.commit()
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'created_by_user_id': self.created_by_user_id,
+        }
