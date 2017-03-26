@@ -7,7 +7,7 @@ from flask import (
     flash,
     redirect,
     url_for,
-    # request,
+    request,
     render_template
     )
 from sqlalchemy.orm.exc import NoResultFound
@@ -28,7 +28,7 @@ from flask_login import (
     login_user,
     logout_user
     )
-from models import User, OAuth, db
+from models import db, User, OAuth, Catagory
 from flask_scss import Scss
 
 
@@ -45,7 +45,8 @@ app.register_blueprint(blueprint, url_prefix="/login")
 
 # setup login manager
 login_manager = LoginManager()
-login_manager.login_view = 'github.login'
+login_manager.login_view = 'login'
+login_manager.init_app(app)
 
 
 @login_manager.user_loader
@@ -55,14 +56,16 @@ def load_user(user_id):
 
 
 # setup SQLAlchemy backend
-blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+blueprint.backend = SQLAlchemyBackend(
+    OAuth, db.session, user=current_user)
 
 
 @oauth_authorized.connect_via(blueprint)
 def github_logged_in(blueprint, token): # noqa
     """Create/login local user on successful OAuth login."""
     if not token:
-        flash("Failed to log in with {name}".format(name=blueprint.name))
+        flash(
+            "Failed to log in with {name}".format(name=blueprint.name))
         return
     # figure out who the user is
     resp = blueprint.session.get("/user")
@@ -114,6 +117,7 @@ def login():
     """View for login."""
     return render_template('login.html')
 
+
 @app.route('/')
 def index():
     """View for home."""
@@ -130,6 +134,29 @@ def json_catalog():
 def view_catagory(catagory):
     """View for catagories."""
     return 'catagory {!s}'.format(catagory)
+
+
+@app.route('/new/catalog/catagory/', methods=['GET', 'POST'])
+# @login_required
+def view_catagory_new():
+    """View for creating a catagory."""
+    error = ""
+    if request.method == 'POST':
+        print(current_user.id)
+        catagory_name = request.form['catagory_name']
+        catagory_desc = request.form['catagory_desc']
+        try:
+            Catagory.create_catagory(
+                name=catagory_name,
+                description=catagory_desc,
+                created_by_user_id=current_user.id
+            )
+        except ValueError as e:
+            flash(e)
+        else:
+            flash("Successfully created catagory.")
+            return redirect(url_for('index'))
+    return render_template('new_catagory.html')
 
 
 @app.route('/edit/catalog/<catagory>/')
