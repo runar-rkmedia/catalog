@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
 {% block body %}
-<h2 class="relative">Catagories</h2>
-{% if current_user.is_authenticated %}
-<div class="add-catagory-button">
-  <a href="{{url_for('view_catagory_new')}}"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
-</div>
-{% endif %}
+<h2 class="">Catagories</h2>
 
 {% if catagories %}
 <div class="catagories tiles">
   {% for catagory in catagories %}
-  <div class="catagory tile" style="cursor: pointer;" onclick="window.location='{{url_for('view_catagory',catagory=catagory.name)}}';">
+  <div id="catagory-{{ loop.index }}" class="catagory tile" style="cursor: pointer;" onclick="window.location='{{url_for('view_catagory',catagory=catagory.name)}}';">
         {{ catagory.name }}
   </div>
   {% endfor %}</div>
 {% endif %}
 
+{% if current_user.is_authenticated %}
+<div class="add-button">
+  <a href="{{url_for('view_catagory_new')}}"><i class="fa fa-plus-circle" aria-hidden="true"></i>Add a new catagory</a>
+</div>
+{% endif %}
+
 {% if items %}
-<h2>Latest items added</h2>
-{%include 'items.html'%}
+<div class="items">
+  <script type="text/javascript">
+    getItems('/json/catalog/items/latest/', $('.items'));
+  </script>
+</div>
+<!-- <h2>Latest items added</h2> -->
+<!-- {%include 'items.html'%} -->
 {% endif %}
 {% endblock %}

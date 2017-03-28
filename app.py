@@ -143,10 +143,17 @@ def json_catalog():
     return jsonify(catagories=[i.serialize for i in catagories])
 
 
-@app.route('/json/catalog/<catagory_id>/')
+@app.route('/json/catalog/<int:catagory_id>/')
 def json_catalog_catagory(catagory_id):
     """Return a json-object of the items in a catagory."""
     items = CatagoryItem.query.filter_by(catagory_id=catagory_id).all()
+    return jsonify(items=[i.serialize for i in items])
+
+
+@app.route('/json/catalog/items/latest/')
+def json_catalog_catagory_latest_items():
+    """Return a json-object of the items in a catagory."""
+    items = CatagoryItem.query.order_by('time_created').limit(10)
     return jsonify(items=[i.serialize for i in items])
 
 

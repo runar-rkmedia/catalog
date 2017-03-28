@@ -104,10 +104,18 @@ class CatagoryItem(db.Model):
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
+        catagory = Catagory.query.filter_by(
+            id=self.catagory_id).first()
+        if catagory:
+            catagory_name = catagory.name
+        else:
+            catagory_name = 'noname'
         return {
             'id': self.id,
             'name': self.name,
             'description': self.description,
             'created_by_user_id': self.created_by_user_id,
-            'catagory': self.catagory_id,
+            'catagory_id': self.catagory_id,
+            'catagory': catagory_name,
+            'time_created': self.time_created,
         }
