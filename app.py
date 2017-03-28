@@ -136,11 +136,18 @@ def view_catalog():
         )
 
 
-@app.route('/json/catalog/catalog/')
+@app.route('/json/catalog/')
 def json_catalog():
-    """View for home."""
+    """Return a json of the catagories."""
     catagories = Catagory.query.all()
     return jsonify(catagories=[i.serialize for i in catagories])
+
+
+@app.route('/json/catalog/<catagory_id>/')
+def json_catalog_catagory(catagory_id):
+    """Return a json-object of the items in a catagory."""
+    items = CatagoryItem.query.filter_by(catagory_id=catagory_id).all()
+    return jsonify(items=[i.serialize for i in items])
 
 
 @app.route('/catalog/<catagory>')
