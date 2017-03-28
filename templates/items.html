@@ -1,0 +1,20 @@
+{% if items %}
+    <div class="items tiles">
+        {% for item in items %}
+                <div id="item-{{ loop.index }}" class="item tile" onclick="itemDisplayMore({{ loop.index }},{{items|count}})">
+                  <div class="item-name">{{ item.name }}
+                  {% if item_show_catagory %}
+                  <span class="item-catagory">({{ item.catagory.name }})</span>
+                  {% endif %}</div>
+                  <div class="item-more no-display">
+                    <div class="item-desc">{{ item.description }}</div>
+                    <div class="add-item-button">
+                      <a href="{{url_for('view_catagory_new_item',catagory=item.catagory.name)}}">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+        {% endfor %}
+    </div>
+{% endif %}

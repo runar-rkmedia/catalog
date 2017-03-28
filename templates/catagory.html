@@ -9,12 +9,6 @@
 </div>
 {% endif %}
 
-{% if items %}
-<div class="items">
-  {% for item in items %}
-  <div>
-        {{ item.name }}
-  </div>
-  {% endfor %}</div>
-{% endif %}
+{%include 'items.html'%}
+
 {% endblock %}

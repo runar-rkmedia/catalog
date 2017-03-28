@@ -2,12 +2,14 @@
 <head>
     <title>Catalogs</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <script src="https://use.fontawesome.com/13a615c5db.js"></script>
+    <script src="{{url_for('static', filename='js/item.js')}}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <div class="row header">
-    <h1>Item catalog</h1>
+    <a href="{{ url_for("view_catalog") }}" class="header-link"><h1>Item catalog</h1></a>
     <hr>
 </div>
 <div class="flash container"><div class="row flash-messages">{% with messages = get_flashed_messages() %}

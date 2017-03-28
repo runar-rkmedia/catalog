@@ -9,11 +9,16 @@
 {% endif %}
 
 {% if catagories %}
-<div class="catagories">
+<div class="catagories tiles">
   {% for catagory in catagories %}
-  <div class="catagory" style="cursor: pointer;" onclick="window.location='{{url_for('view_catagory',catagory=catagory.name)}}';">
+  <div class="catagory tile" style="cursor: pointer;" onclick="window.location='{{url_for('view_catagory',catagory=catagory.name)}}';">
         {{ catagory.name }}
   </div>
   {% endfor %}</div>
+{% endif %}
+
+{% if items %}
+<h2>Latest items added</h2>
+{%include 'items.html'%}
 {% endif %}
 {% endblock %}
