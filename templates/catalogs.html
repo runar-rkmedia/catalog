@@ -4,12 +4,11 @@
 <h2 class="">Catagories</h2>
 
 {% if catagories %}
-<div class="catagories tiles">
-  {% for catagory in catagories %}
-  <div id="catagory-{{ loop.index }}" class="catagory tile" style="cursor: pointer;" onclick="window.location='{{url_for('view_catagory',catagory=catagory.name)}}';">
-        {{ catagory.name }}
-  </div>
-  {% endfor %}</div>
+<div class="catagories">
+  <script type="text/javascript">
+    getCatagories('/json/catalog/', $('.catagories'));
+  </script>
+</div>
 {% endif %}
 
 {% if current_user.is_authenticated %}
@@ -20,11 +19,11 @@
 
 {% if items %}
 <div class="items">
+  <h2>Latest items added</h2>
   <script type="text/javascript">
     getItems('/json/catalog/items/latest/', $('.items'));
   </script>
 </div>
-<!-- <h2>Latest items added</h2> -->
 <!-- {%include 'items.html'%} -->
 {% endif %}
 {% endblock %}
