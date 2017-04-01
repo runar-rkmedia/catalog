@@ -8,70 +8,75 @@ if (!String.prototype.format) {
     };
 }
 
-function formatDivID(id, type) {
-    return $('#' + type + '-' + id);
-}
-
-function catagoryDisplayMore(index, totalDivs, type, id) {
-    itemDisplayMore(index, totalDivs, type);
-    var thisItem = formatDivID(index, type);
+// Expand the selected catagory, and retrieve subitems.
+function catagoryDisplayMore(index, type, id, thisDiv) {
+    itemDisplayMore(type, thisDiv);
+    var thisItem = $(thisDiv);
     var newDivID = 'catagory-' + index + '-items';
     if (document.getElementById(newDivID) === null) {
-        thisItem.append('<div id="{0}" class="item-more"></div>'.format(newDivID));
+        jQuery('<div/>', {
+            id: newDivID = newDivID,
+            class: 'item-more'
+        }).appendTo(thisDiv);
         getItems('/json/catalog/' + id, $('#' + newDivID));
     }
 }
 
-function itemDisplayMore(index, totalDivs, type) {
-    for (var i = 0; i < totalDivs; i++) {
-        var thisItem = formatDivID(i, type);
-        var moreItem = thisItem.children('div.item-more');
-        if (i === index) {
-            moreItem.css('display', 'block');
-            thisItem.addClass(type + '-expand');
-        } else {
-            moreItem.css('display', 'none');
-            thisItem.removeClass(type + '-expand');
-        }
-    }
+// Expand the selected item.
+function itemDisplayMore(type, thisDiv) {
+    var thisItem = $(thisDiv);
+    thisItem.parent().children().removeClass(type + '-expand');
+    thisItem.parent().children().children('div.item-more').css('display', 'none');
+    thisItem.addClass(type + '-expand');
+    thisItem.children('div.item-more').css('display', 'block');
 }
 
+// Retrieve items from server
 function getItems(url, div) {
     $.getJSON(url, function(result) {
         if (result.items.length > 0) {
-            itemsHTML = '<div class="items tiles">';
+            jQuery('<div/>', {
+                class: 'items tiles',
+            }).appendTo(div);
+            var containerDiv = div.find('div.items');
             for (var i = 0; i < result.items.length; i++) {
                 item = result.items[i];
-                itemsHTML += `
-          <div id="item-{0}" class="item tile" onclick="itemDisplayMore({0},{1}, 'item')">
-            <div class="item-name">{2}
-              <span class="item-catagory">({3})</span>
-            </div>
-            <div class="item-more no-display">
-              <div class="item-desc">{3}</div>
-            </div>
-          </div>`.format(i, result.items.length, item['name'], item['catagory'])
+                jQuery('<div/>', {
+                    id: 'item-' + i,
+                    class: 'item tile',
+                    style: 'cursor: pointer;',
+                    onclick: 'itemDisplayMore("item",this);',
+                    html: item.name + '<div class="item-catagory">' + item.catagory + '</div>'
+                }).appendTo(containerDiv);
             }
-            itemsHTML += ('</div>');
-            div.append(itemsHTML);
         }
     });
 }
 
+// Retrueve catagories from server
 function getCatagories(url, div) {
     $.getJSON(url, function(result) {
-        console.log(result);
         if (result.catagories.length > 0) {
-            catagoriesHTML = '<div class="catagories tiles">';
+            jQuery('<div/>', {
+                class: 'catagories tiles',
+            }).appendTo(div);
+            var containerDiv = div.find('div.catagories');
             for (var i = 0; i < result.catagories.length; i++) {
                 catagory = result.catagories[i];
-                catagoriesHTML += `
-        <div id="catagory-{0}" class="catagory tile" style="cursor: pointer;" onclick="catagoryDisplayMore({0}, {1}, 'catagory', {3});">
-              {2}
-        </div>`.format(i, result.catagories.length, catagory['name'], catagory['id'])
+                jQuery('<div/>', {
+                    id: 'catagory-' + i,
+                    class: 'catagory tile',
+                    style: 'cursor: pointer;',
+                    onclick: 'catagoryDisplayMore(' + [
+                            i,
+                            "'catagory'", +
+                            catagory.id,
+                            "this"
+                        ].join(",") +
+                        ');',
+                    text: catagory.name
+                }).appendTo(containerDiv);
             }
-            catagoriesHTML += ('</div>');
-            div.append(catagoriesHTML);
         }
     });
 }
