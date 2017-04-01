@@ -37,15 +37,15 @@ function getItems(url, div) {
                     class: 'item tile',
                     style: 'cursor: pointer;',
                     onclick: 'itemDisplayMore("item",this);',
-                    html: item.name + '<div class="item-catagory">' + item.catagory + '</div>'
+                    html: item.name + '<div class="item-catagory">' + item.catagory + '</div>'+ '<div class="item-description no-display item-more">' + item.description + '</div>'
                 }).appendTo(containerDiv);
             }
         }
     });
 }
-
 // Retrueve catagories from server
-function getCatagories(url, div) {
+function getCatagories(url='/json/catalog/', div=$('.catag')) {
+  div.empty();
     $.getJSON(url, function(result) {
         if (result.catagories.length > 0) {
             jQuery('<div/>', {
@@ -54,8 +54,9 @@ function getCatagories(url, div) {
             var containerDiv = div.find('div.catagories');
             for (var i = 0; i < result.catagories.length; i++) {
                 catagory = result.catagories[i];
+                var thisID = 'catagory-' + i;
                 jQuery('<div/>', {
-                    id: 'catagory-' + i,
+                    id: thisID,
                     class: 'catagory tile',
                     style: 'cursor: pointer;',
                     onclick: 'catagoryDisplayMore(' + [
@@ -64,9 +65,17 @@ function getCatagories(url, div) {
                             catagory.id,
                             "this"
                         ].join(",") +
-                        ');',
-                    text: catagory.name
+                        ');'
                 }).appendTo(containerDiv);
+                var thisContainer = containerDiv.find('#'+thisID);
+                jQuery('<div/>',{
+                  class: 'catagory-name',
+                  text: catagory.name
+                }).appendTo(thisContainer);
+                jQuery('<div/>',{
+                  class: 'catagory-desc item-more no-display',
+                  text: catagory.description
+                }).appendTo(thisContainer);
             }
         }
     });
@@ -75,32 +84,42 @@ function getCatagories(url, div) {
 function hideMeShowOther(thisButton, targetForm) {
     $(targetForm).toggle();
     $(thisButton).toggle();
+    $("input:text:visible:first").focus();
 }
 // General handler for forms.
 $(function() {
     $("form").submit(function(e) {
         e.preventDefault();
-        thisForm = $(e.currentTarget);
-        var actionurl = e.currentTarget.action;
-        $.ajax({
-            url: actionurl,
-            type: 'post',
-            dataType: 'json',
-            data: thisForm.serialize(),
-            success: function(data) {
-                clearNotifications(thisForm.children('.error'));
-                for (var k in data) {
-                    if (data.hasOwnProperty(k)) {
-                      console.log(thisForm);
-                        addNotification(k, data[k], thisForm.children('.error'));
-                    }
-                }
-            }
-        });
-
     });
 
 });
+
+function submitForm(thisForm, url, method, showOnSuccess) {
+  thisForm = $(thisForm);
+  console.log(url);
+  $.ajax({
+      url: url,
+      type: 'post',
+      dataType: 'json',
+      data: thisForm.serialize(),
+      success: function(data) {
+          clearNotifications(thisForm.children('.error'));
+          for (var k in data) {
+              if (data.hasOwnProperty(k)) {
+                errorDiv=null;
+                if (k === 'error') {
+                  errorDiv = thisForm.children('.error');
+                }else if (k === 'success') {
+                  thisForm.hide();
+                  $(showOnSuccess).show();
+                  getCatagories();
+                }
+                  addNotification(k, data[k], errorDiv);
+              }
+          }
+      }
+  });
+}
 
 function clearNotifications(errorDiv=null) {
   if (!errorDiv || errorDiv.length===0) {

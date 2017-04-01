@@ -4,9 +4,9 @@
     <h2 class="">Catagories</h2>
 
     {% if catagories %}
-        <div class="catagories">
+        <div class="catag">
             <script type="text/javascript">
-                getCatagories('/json/catalog/', $('.catagories'));
+                getCatagories();
             </script>
         </div>
     {% endif %}
@@ -15,7 +15,7 @@
         <div class="row add-catagory">
             <button id="catagory-button" type="button" class="u-pull-right" onclick="hideMeShowOther(this, '#form-new-cat');">
                 <i class="fa fa-plus-circle" aria-hidden="true"></i>Add a new catagory</button>
-            <form id="form-new-cat" class="no-display" action="/json/catalog/" onSuccess="hideMeShowOther('#catagory-button', '#form-new-cat');">
+            <form id="form-new-cat" class="no-display"  onsubmit="submitForm(this, '/json/catalog/', 'post', '#catagory-button');">
               <input type="hidden" name="_method" value="post"/>
                 <div class="row">
                     <div class="six columns">
