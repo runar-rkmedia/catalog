@@ -1,29 +1,42 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
 {% block body %}
-<h2 class="">Catagories</h2>
+    <h2 class="">Catagories</h2>
 
-{% if catagories %}
-<div class="catagories">
-  <script type="text/javascript">
-    getCatagories('/json/catalog/', $('.catagories'));
-  </script>
-</div>
-{% endif %}
+    {% if catagories %}
+        <div class="catagories">
+            <script type="text/javascript">
+                getCatagories('/json/catalog/', $('.catagories'));
+            </script>
+        </div>
+    {% endif %}
 
-{% if current_user.is_authenticated %}
-<div class="add-button">
-  <a href="{{url_for('view_catagory_new')}}"><i class="fa fa-plus-circle" aria-hidden="true"></i>Add a new catagory</a>
-</div>
-{% endif %}
+    {% if current_user.is_authenticated %}
+        <div class="row add-catagory">
+            <button type="button" class="u-pull-right" onclick="hideMeShowOther(this, '#form-new-cat');">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i>Add a new catagory</button>
+            <form id="form-new-cat" class="no-display" action="/json/catalog/">
+              <input type="hidden" name="_method" value="post"/>
+                <div class="row">
+                    <div class="six columns">
+                        <label for="form-catagory-name">Catagory name</label>
+                        <input class="u-full-width" type="text" name="catagory-name" id="form-catagory-name" placeholder="Title">
+                    </div>
+                </div>
+                <label for="form-catagory-desc">Description</label>
+                <textarea name="catagory-desc" class="u-full-width" placeholder="Something awesome goes here" id="form-catagory-desc"></textarea>
+                <input class="submitButton button-primary u-pull-right" type="submit" value="Submit">
+            </form>
+        </div>
+    {% endif %}
 
-{% if items %}
-<div class="items">
-  <h2>Latest items added</h2>
-  <script type="text/javascript">
-    getItems('/json/catalog/items/latest/', $('.items'));
-  </script>
-</div>
-<!-- {%include 'items.html'%} -->
-{% endif %}
+    {% if items %}
+        <div class="items">
+            <h2>Latest items added</h2>
+            <script type="text/javascript">
+                getItems('/json/catalog/items/latest/', $('.items'));
+            </script>
+        </div>
+        <!-- {%include 'items.html'%} -->
+    {% endif %}
 {% endblock %}

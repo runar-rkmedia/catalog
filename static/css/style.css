@@ -7,37 +7,34 @@ body {
     border: 1px solid #042645;
     padding: 10px; }
 
-    .logo:before {
-      content: 'myLogo'; }
+    .no-display {
+      display: none; }
 
-.no-display {
-  display: none; }
+      .relative {
+        position: relative; }
 
-  .relative {
-    position: relative; }
+        .add-button {
+          text-align: right;
+          font-size: 1.8rem;
+          color: #266cac; }
 
-    .add-button {
-      text-align: right;
-      font-size: 1.8rem;
-      color: #266cac; }
+          .catagory {
+            background-color: #266cac;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid rgba(4, 40, 73, 0.55); }
 
-      .catagory {
-        background-color: #266cac;
-        color: white;
-        text-align: center;
-        padding: 10px;
-        border: 1px solid rgba(4, 40, 73, 0.55); }
-
-        .tile {
-          flex-grow: 1;
-          width: 25%; }
-          @media (max-width: 700px) {
             .tile {
-              width: 33%;   }
+              flex-grow: 1;
+              width: 25%; }
+              @media (max-width: 700px) {
+                .tile {
+                  width: 33%;   }
 }
-            @media (max-width: 400px) {
-              .tile {
-                width: 100%;   }
+                @media (max-width: 400px) {
+                  .tile {
+                    width: 100%;   }
 }
 
 .tiles {
@@ -51,50 +48,61 @@ body {
     padding: 10px;
     border: 1px solid rgba(4, 40, 73, 0.55); }
 
-    .item-expand {
+    .item-catagory {
+      color: rgba(255, 255, 255, 0.7);
+      display: inline; }
+      .item-catagory:before {
+        content: ' ('; }
+        .item-catagory:after {
+          content: ')'; }
+
+.catagory .item-catagory {
+  display: none; }
+
+  .item-expand {
+    font-size: 18px;
+    margin: 3px 0;
+    width: 100%;
+    background-color: #1f7d6d;
+    text-align: left; }
+
+    .catagory-expand {
       font-size: 18px;
       margin: 3px 0;
       width: 100%;
-      background-color: #1f7d6d;
+      background-color: #005aac;
       text-align: left; }
 
-      .catagory-expand {
-        font-size: 18px;
-        margin: 3px 0;
-        width: 100%;
-        background-color: #005aac;
-        text-align: left; }
+      .catagory_desc {
+        min-width: 100%; }
 
-        .catagory_desc {
-          min-width: 100%; }
+        div.connect {
+          font-size: 1.1em; }
 
-          div.connect {
-            font-size: 1.1em; }
-
-            .oauth_buttons a {
-              display: flex;
-              align-items: center;
-              font-size: 1.2em;
-              text-decoration: none;
-              color: white;
-              width: 18em;
-              height: 3em;
-              border-radius: 10px;
-              border: 2px solid rgba(0, 25, 48, 0.75); }
-              .oauth_buttons a .connect-logo {
-                display: inline;
-                text-align: center;
-                width: 50px;
-                padding: 0.1em 0;
-                font-size: 24pt;
-                margin-right: 0.3em;
-                border-right: 2px solid rgba(0, 25, 48, 0.75); }
-                .oauth_buttons a .sign-in-with-text {
-                  position: relative;
-                  top: 50%;
-                  transform: translateY(-50%);
-                  text-align: left;
-                  padding: 0em 0.3em 0 0; }
+          .oauth_buttons a {
+            display: flex;
+            align-items: center;
+            font-size: 1.2em;
+            text-decoration: none;
+            color: white;
+            width: 18em;
+            height: 3em;
+            border-radius: 10px;
+            border: 2px solid rgba(0, 25, 48, 0.75); }
+            .oauth_buttons a .connect-logo {
+              display: inline;
+              text-align: center;
+              width: 50px;
+              padding: 0.1em 0;
+              font-size: 24pt;
+              margin-right: 0.3em;
+              border-right: 2px solid rgba(0, 25, 48, 0.75); }
+              .oauth_buttons a .sign-in-with-text {
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%);
+                text-align: left;
+                padding: 0em 0.3em 0 0; }
 
 a.facebook {
   background: #3a589a;

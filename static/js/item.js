@@ -80,3 +80,26 @@ function getCatagories(url, div) {
         }
     });
 }
+
+function hideMeShowOther(thisButton, targetForm) {
+  $(targetForm).toggle();
+  $(thisButton).toggle();
+}
+// General handler for forms.
+$(function() {
+    $("form").submit(function(e) {
+        e.preventDefault();
+        var actionurl = e.currentTarget.action;
+        $.ajax({
+                url: actionurl,
+                type: 'post',
+                dataType: 'json',
+                data: $(e.currentTarget).serialize(),
+                success: function(data) {
+                    console.log(data);
+                }
+        });
+
+    });
+
+});

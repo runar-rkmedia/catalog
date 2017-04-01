@@ -11,7 +11,7 @@ from flask import (
     jsonify,
     render_template
 )
-from flask_misaka import Misaka # noqa
+from flask_misaka import Misaka  # noqa
 from sqlalchemy.orm.exc import NoResultFound
 from flask_dance.contrib.github import (
     make_github_blueprint,
@@ -133,18 +133,45 @@ def view_catalog():
         catagories=catagories,
         items=items,
         item_show_catagory=True,
-        )
+    )
 
 
-@app.route('/json/catalog/')
+@app.route('/json/catalog/', methods=['GET', 'POST'])
 def json_catalog():
-    """Return a json of the catagories."""
+    """Return a json of the catagories, or create a new catagory."""
+    if request.method == 'POST':
+        response = {}
+        if not current_user.is_authenticated:
+            response['error'] = 'You are not logged in'
+            return jsonify(response)
+        method = request.form['_method']
+        if method == 'post':
+            catagory_name = request.form['catagory-name']
+            catagory_desc = request.form['catagory-desc']
+            try:
+                Catagory.create_catagory(
+                    name=catagory_name,
+                    description=catagory_desc,
+                    created_by_user_id=current_user.id
+                )
+            except ValueError as e:
+                response['error'] = str(e)
+            else:
+                response['success'] = 'Successfully added catagory'
+            return jsonify(response)
     catagories = Catagory.query.all()
     return jsonify(catagories=[i.serialize for i in catagories])
 
 
-@app.route('/json/catalog/<int:catagory_id>/')
+@app.route('/json/catalog/<int:catagory_id>/', methods=[
+    'GET', 'POST', 'PUT', 'DELETE'])
 def json_catalog_catagory(catagory_id):
+    if request.method == 'POST':
+        return 'we post an item'
+    if request.method == 'PUT':
+        return 'we edit'
+    if request.method == 'DELETE':
+        return 'we delete catagory'
     """Return a json-object of the items in a catagory."""
     items = CatagoryItem.query.filter_by(catagory_id=catagory_id).all()
     return jsonify(items=[i.serialize for i in items])
