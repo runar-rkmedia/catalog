@@ -8,27 +8,32 @@
 <script src="{{url_for('static', filename='js/item.js')}}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<div class="row header">
-    <a href="{{ url_for("view_catalog") }}" class="header-link"><h1>Item catalog</h1></a>
-    <hr>
+<div class="row notifications no-display" onclick="dismiss(this)">
+  <div class="flash container"><div class="row flash-messages">
+    <ul class="flashes">
+    {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                {% endif %}
+        {% endwith %}
+      </ul>
+      </div>
 </div>
-<div class="flash container"><div class="row flash-messages">{% with messages = get_flashed_messages() %}
-      {% if messages %}
-          <ul class="flashes">
-              {% for message in messages %}
-                  <li>{{ message }}</li>
-              {% endfor %}
-          </ul>
-      {% endif %}
-      {% endwith %}</div>
-  {% if current_user.is_authenticated %}
-      You are logged in as
-      {{ current_user.username }}!
-      <a href="{{ url_for("logout") }}">Log out</a>
-  {% else %}
-      You are not logged in.
-      <a href="{{ url_for("login") }}">Log in</a>
-  {% endif %}</div>
+</div>
+<div class="row header">
+    <a href="{{ url_for('view_catalog') }}" class="header-link"><h1>Item catalog</h1></a>
+    <hr>
+    {% if current_user.is_authenticated %}
+        You are logged in as
+        {{ current_user.username }}!
+        <a href="{{ url_for('logout') }}">Log out</a>
+    {% else %}
+        You are not logged in.
+        <a href="{{ url_for('login') }}">Log in</a>
+    {% endif %}
+</div>
 <div class="container body-container">
 
     {% block body %}{% endblock %}

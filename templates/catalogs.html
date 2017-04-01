@@ -13,9 +13,9 @@
 
     {% if current_user.is_authenticated %}
         <div class="row add-catagory">
-            <button type="button" class="u-pull-right" onclick="hideMeShowOther(this, '#form-new-cat');">
+            <button id="catagory-button" type="button" class="u-pull-right" onclick="hideMeShowOther(this, '#form-new-cat');">
                 <i class="fa fa-plus-circle" aria-hidden="true"></i>Add a new catagory</button>
-            <form id="form-new-cat" class="no-display" action="/json/catalog/">
+            <form id="form-new-cat" class="no-display" action="/json/catalog/" onSuccess="hideMeShowOther('#catagory-button', '#form-new-cat');">
               <input type="hidden" name="_method" value="post"/>
                 <div class="row">
                     <div class="six columns">
@@ -25,7 +25,9 @@
                 </div>
                 <label for="form-catagory-desc">Description</label>
                 <textarea name="catagory-desc" class="u-full-width" placeholder="Something awesome goes here" id="form-catagory-desc"></textarea>
-                <input class="submitButton button-primary u-pull-right" type="submit" value="Submit">
+                <ul class="error"></ul>
+                <input type="button" value="Cancel" onclick="hideMeShowOther('#catagory-button', '#form-new-cat');">
+                <input class="button-primary u-pull-right" type="submit" value="Submit">
             </form>
         </div>
     {% endif %}

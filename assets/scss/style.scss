@@ -21,4 +21,20 @@ body {
 .relative{
   position: relative;
 }
+.notifications{
+  background-color: rgba(#ffffff, 0.81);
+  width: 100%;
+  position: fixed;
+  top: 0;
+  border-bottom: 1px solid black;
+  z-index: 99;
+    text-align: center;
+}
+.dismiss {
+}
+.error{
+  color: #d60000;
+  list-style: none;
+  font-weight: bold;
+}
 @import "tiles", "login"

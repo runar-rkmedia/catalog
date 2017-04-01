@@ -1,13 +1,4 @@
-// I like pythons `.format` and want it in javascript
-if (!String.prototype.format) {
-    String.prototype.format = function() {
-        var args = arguments;
-        return this.replace(/\{(\d+)\}/g, function(m, n) {
-            return args[n];
-        });
-    };
-}
-
+/*jshint esversion: 6 */
 // Expand the selected catagory, and retrieve subitems.
 function catagoryDisplayMore(index, type, id, thisDiv) {
     itemDisplayMore(type, thisDiv);
@@ -82,24 +73,61 @@ function getCatagories(url, div) {
 }
 
 function hideMeShowOther(thisButton, targetForm) {
-  $(targetForm).toggle();
-  $(thisButton).toggle();
+    $(targetForm).toggle();
+    $(thisButton).toggle();
 }
 // General handler for forms.
 $(function() {
     $("form").submit(function(e) {
         e.preventDefault();
+        thisForm = $(e.currentTarget);
         var actionurl = e.currentTarget.action;
         $.ajax({
-                url: actionurl,
-                type: 'post',
-                dataType: 'json',
-                data: $(e.currentTarget).serialize(),
-                success: function(data) {
-                    console.log(data);
+            url: actionurl,
+            type: 'post',
+            dataType: 'json',
+            data: thisForm.serialize(),
+            success: function(data) {
+                clearNotifications(thisForm.children('.error'));
+                for (var k in data) {
+                    if (data.hasOwnProperty(k)) {
+                      console.log(thisForm);
+                        addNotification(k, data[k], thisForm.children('.error'));
+                    }
                 }
+            }
         });
 
     });
 
+});
+
+function clearNotifications(errorDiv=null) {
+  if (!errorDiv || errorDiv.length===0) {
+    errorDiv = $('ul.flashes');
+  }
+  $(errorDiv).empty();
+}
+function addNotification(type, msg, errorDiv=null) {
+  if (!errorDiv || errorDiv.length===0) {
+    errorDiv = $('ul.flashes');
+  }
+  // clearNotifications();
+    jQuery('<li/>', {
+        class: type,
+        text: msg
+    }).appendTo(errorDiv);
+    $('div.notifications').show();
+    setTimeout(dismiss, 8000);
+}
+
+function dismiss(fadeTime=400) {
+    $('div.notifications').fadeOut(fadeTime,clearNotifications());
+}
+$(document).ready(function(){
+  var flashli = $('ul.flashes').find('li');
+  if (flashli.length>0) {
+    $('div.notifications').show();
+    setTimeout(dismiss, 8000);
+  }
 });

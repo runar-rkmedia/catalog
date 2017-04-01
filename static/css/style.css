@@ -13,28 +13,42 @@ body {
       .relative {
         position: relative; }
 
-        .add-button {
-          text-align: right;
-          font-size: 1.8rem;
-          color: #266cac; }
+        .notifications {
+          background-color: rgba(255, 255, 255, 0.81);
+          width: 100%;
+          position: fixed;
+          top: 0;
+          border-bottom: 1px solid black;
+          z-index: 99;
+          text-align: center; }
 
-          .catagory {
-            background-color: #266cac;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            border: 1px solid rgba(4, 40, 73, 0.55); }
+          .error {
+            color: #d60000;
+            list-style: none;
+            font-weight: bold; }
 
-            .tile {
-              flex-grow: 1;
-              width: 25%; }
-              @media (max-width: 700px) {
+            .add-button {
+              text-align: right;
+              font-size: 1.8rem;
+              color: #266cac; }
+
+              .catagory {
+                background-color: #266cac;
+                color: white;
+                text-align: center;
+                padding: 10px;
+                border: 1px solid rgba(4, 40, 73, 0.55); }
+
                 .tile {
-                  width: 33%;   }
+                  flex-grow: 1;
+                  width: 25%; }
+                  @media (max-width: 700px) {
+                    .tile {
+                      width: 33%;   }
 }
-                @media (max-width: 400px) {
-                  .tile {
-                    width: 100%;   }
+                    @media (max-width: 400px) {
+                      .tile {
+                        width: 100%;   }
 }
 
 .tiles {
