@@ -1,5 +1,3 @@
-Place your catalog project in this directory.
-
 ## Notes
 
 
@@ -27,7 +25,7 @@ python app.py --setup
 
 Because I don't want to store my config-files with my secrets publicly on github, you will have to create your own. But don't worry, it is not much work.
 Create a folder called `instance` and within the folder, create a file called `config.cfg`. Put this into that file:
-
+GitHubGitHubGitHub
 ```INI
 TESTING=False
 DEBUG=True

@@ -6,7 +6,7 @@ $secondary-color: #26ac95;
 $secondary-dark-color: #042849;
 $secondary-selected-color: #1f7d6d;
 body {
-    font-family: 'Raleway', sans-serif;
+    // font-family: 'Raleway', sans-serif;
 }
 .body-container{
   background-color: #d6e7f6;
@@ -16,7 +16,7 @@ body {
 }
 
 .no-display{
-  display: none;
+  display: none; !important;
 }
 .relative{
   position: relative;

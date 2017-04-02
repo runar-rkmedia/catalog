@@ -76,4 +76,4 @@ Temporary Items
 virtualEnv
 instance/
 *.db
-.static/css/
+static/css/
