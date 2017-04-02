@@ -176,19 +176,13 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                     id: newFormDiv,
                     class: 'add-item item-more no-display'
                 }).appendTo(thisContainer);
-
-                // thisContainer.children('#' + newFormDiv).append(itemForm(
-                //     method='post',
-                //     url='json/catalog/' + catagory.id + '/',
-                //     type='Item',
-                //     hideButton='#new-item-button-'+i,                    showDiv='#' + newFormDiv
-                // ));
             }
         }
     });
 }
 
 function showForm(containerDiv, request, hideButton, catagoryID) {
+  console.log($(containerDiv));
   $(containerDiv).empty();
   $(hideButton).hide();
   $(containerDiv).show();
@@ -218,12 +212,12 @@ function hideMeShowOther(thisButton, targetForm) {
         $(targetForm).hide();
         $(thisButton).show();
       }
-        if (!$(targetForm).length >0 ) {
-          console.log('did not find targetForm:' + targetForm);
-        }
-        if (!$(thisButton).length >0 ) {
-          console.log('did not find thisButton:' + thisButton);
-        }
+        // if (!$(targetForm).length >0 ) {
+        //   console.log('did not find targetForm:' + targetForm);
+        // }
+        // if (!$(thisButton).length >0 ) {
+        //   console.log('did not find thisButton:' + thisButton);
+        // }
         // $(thisButton).css('background-color: red;');
         // $("input:text:visible:first").focus();
     });
@@ -296,11 +290,4 @@ $(document).ready(function() {
         id: 'new-add-catagory-form-div',
         class: 'add-addCatagory no-display'
     }).appendTo($("div.add-catagory"));
-    $("div.add-catagory").children('#new-add-catagory-form-div').append(itemForm(
-        method='post',
-        url='/json/catalog/',
-        type='Catagory',
-        hideButton='#form-post-Catagory',
-        showDiv='#new-add-catagory-form-div'
-    ));
 });
