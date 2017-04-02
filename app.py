@@ -187,7 +187,7 @@ def json_catalog_catagory(catagory_id):
             except ValueError as e:
                 response['error'] = str(e)
             else:
-                response['success'] = 'Successfully added catagory'
+                response['success'] = 'Successfully added item'
             return jsonify(response)
         response['error'] = 'we post an item'
         return jsonify(response)
