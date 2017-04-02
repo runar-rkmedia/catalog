@@ -69,8 +69,12 @@ function itemDisplayMore(type, thisDiv) {
     var thisItem = $(thisDiv);
     thisItem.parent().children().removeClass(type + '-expand');
     thisItem.parent().children().children('div.item-more').css('display', 'none');
+    thisItem.parent().children().children('div.item-close').css('display', 'none');
     thisItem.addClass(type + '-expand');
     thisItem.children('.item-more').css('display', 'block');
+    $('html, body').animate({
+    scrollTop: thisItem.offset().top - 100
+}, 200);
 }
 
 // Retrieve items from server
@@ -127,22 +131,22 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                     class: 'catagory-desc item-more no-display',
                     html: catagory.description
                 }).appendTo(thisContainer);
+                var newFormDiv = 'new-item-form-div-' + i
                 jQuery('<div/>', {
-                    id: 'new-item-button',
+                    id: 'new-item-button-' + i,
                     class: 'myButton fa fa-plus-circle item-more no-display',
-                    onclick: 'hideMeShowOther(this, "#new-item-form-div");',
+                    onclick: 'hideMeShowOther(this, "#' + newFormDiv + '");',
                     text: 'Add a new item.'
                 }).appendTo(thisContainer);
                 jQuery('<div/>', {
-                    id: 'new-item-form-div',
-                    class: 'add-item no-display'
+                    id: newFormDiv,
+                    class: 'add-item item-close no-display'
                 }).appendTo(thisContainer);
-                thisContainer.children('#new-item-form-div').append(itemForm(
+                thisContainer.children('#' + newFormDiv).append(itemForm(
                     method='post',
                     url='json/catalog/' + catagory.id + '/',
                     type='Item',
-                    hideButton='#new-item-button',
-                    showDiv='#new-item-form-div'
+                    hideButton='#new-item-button-'+i,                    showDiv='#' + newFormDiv
                 ));
             }
         }
