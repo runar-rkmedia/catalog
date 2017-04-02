@@ -5,36 +5,62 @@ $light-text-color: white;
 $secondary-color: #26ac95;
 $secondary-dark-color: #042849;
 $secondary-selected-color: #1f7d6d;
+
 body {
     // font-family: 'Raleway', sans-serif;
 }
-.body-container{
-  background-color: #d6e7f6;
-  min-height: 70vh;
-  border: 1px solid #042645;
-  padding: 10px;
+
+.body-container {
+    background-color: #d6e7f6;
+    min-height: 70vh;
+    border: 1px solid #042645;
+    padding: 10px;
 }
 
-.no-display{
-  display: none; !important;
+.no-display {
+    display: none;
 }
-.relative{
-  position: relative;
+
+.relative {
+    position: relative;
 }
-.notifications{
-  background-color: rgba(#ffffff, 0.81);
-  width: 100%;
-  position: fixed;
-  top: 0;
-  border-bottom: 1px solid black;
-  z-index: 99;
+
+.notifications {
+    background-color: rgba(#ffffff, 0.81);
+    width: 100%;
+    position: fixed;
+    top: 0;
+    border-bottom: 1px solid black;
+    z-index: 99;
     text-align: center;
 }
-.dismiss {
+
+.dismiss {}
+
+.button-cancel,
+input.button-cancel {
+    color: $light-text-color;
+    background-color: #3c3a3a;
+
+    &:hover {
+        color: $light-text-color;
+        background-color: #636363;
+    }
+
+    &:active {
+        color: $light-text-color;
+        background-color: #636363;
+    }
+
+    &:focus {
+        color: $light-text-color;
+        background-color: #8f8f8f;
+    }
 }
-.error{
-  color: #d60000;
-  list-style: none;
-  font-weight: bold;
+
+.error {
+    color: #d60000;
+    list-style: none;
+    font-weight: bold;
 }
 @import "tiles", "login"
