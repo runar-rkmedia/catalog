@@ -125,7 +125,7 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                 }).appendTo(thisContainer);
                 jQuery('<div/>', {
                     class: 'catagory-desc item-more no-display',
-                    text: catagory.description
+                    html: catagory.description
                 }).appendTo(thisContainer);
                 jQuery('<div/>', {
                     id: 'new-item-button',
@@ -238,7 +238,7 @@ $(document).ready(function() {
     }).appendTo($("div.add-catagory"));
     $("div.add-catagory").children('#new-add-catagory-form-div').append(itemForm(
         method='post',
-        url='json/catalog/',
+        url='/json/catalog/',
         type='Catagory',
         hideButton='#form-post-Catagory',
         showDiv='#new-add-catagory-form-div'

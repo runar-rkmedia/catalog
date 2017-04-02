@@ -146,8 +146,8 @@ def json_catalog():
             return jsonify(response)
         method = request.form['_method']
         if method == 'post':
-            catagory_name = request.form['catagory-name']
-            catagory_desc = request.form['catagory-desc']
+            catagory_name = request.form['Catagory-name']
+            catagory_desc = request.form['Catagory-desc']
             try:
                 Catagory.create_catagory(
                     name=catagory_name,
@@ -166,13 +166,31 @@ def json_catalog():
 @app.route('/json/catalog/<int:catagory_id>/', methods=[
     'GET', 'POST', 'PUT', 'DELETE'])
 def json_catalog_catagory(catagory_id):
-    if request.method == 'POST':
-        return 'we post an item'
-    if request.method == 'PUT':
-        return 'we edit'
-    if request.method == 'DELETE':
-        return 'we delete catagory'
     """Return a json-object of the items in a catagory."""
+    response = {}
+    if request.method == 'POST':
+        if not current_user.is_authenticated:
+            response['error'] = 'You are not logged in'
+            return jsonify(response)
+        method = request.form['_method']
+        print(request.form)
+        if method == 'post':
+            catagory_name = request.form['Item-name']
+            catagory_desc = request.form['Item-desc']
+            try:
+                CatagoryItem.create_catagory_item(
+                    name=catagory_name,
+                    description=catagory_desc,
+                    created_by_user_id=current_user.id,
+                    catagory_id=catagory_id
+                )
+            except ValueError as e:
+                response['error'] = str(e)
+            else:
+                response['success'] = 'Successfully added catagory'
+            return jsonify(response)
+        response['error'] = 'we post an item'
+        return jsonify(response)
     items = CatagoryItem.query.filter_by(catagory_id=catagory_id).all()
     return jsonify(items=[i.serialize for i in items])
 

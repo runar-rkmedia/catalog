@@ -2,7 +2,7 @@
 
 # from sqlalchemy import Column, Integer, String
 # from database import Base
-from flask import jsonify
+# from flask import jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_dance.consumer.backend.sqla import (
     OAuthConsumerMixin,
@@ -10,7 +10,8 @@ from flask_dance.consumer.backend.sqla import (
 from flask_login import (
     UserMixin,
 )
-
+from flask.ext.misaka import markdown # noqa
+import bleach
 # setup database models
 db = SQLAlchemy()
 
@@ -53,7 +54,7 @@ class Catagory(db.Model):
                 "Description should be between 3 and 30 characters")
         cat = Catagory(
             name=name,
-            description=description,
+            description=markdown(bleach.clean(description)),
             created_by_user_id=created_by_user_id
         )
         db.session.add(cat)
@@ -94,7 +95,7 @@ class CatagoryItem(db.Model):
                 "Description should be between 3 and 30 characters")
         cat_item = CatagoryItem(
             name=name,
-            description=description,
+            description=markdown(bleach.clean(description)),
             created_by_user_id=created_by_user_id,
             catagory_id=catagory_id
         )
