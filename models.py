@@ -53,7 +53,7 @@ class Catagory(db.Model):
             raise ValueError(
                 "Description should be between 3 and 30 characters")
         cat = Catagory(
-            name=name,
+            name=bleach.clean(name),
             description=markdown(bleach.clean(description)),
             created_by_user_id=created_by_user_id
         )
@@ -94,7 +94,7 @@ class CatagoryItem(db.Model):
             raise ValueError(
                 "Description should be between 3 and 30 characters")
         cat_item = CatagoryItem(
-            name=name,
+            name=bleach.clean(name),
             description=markdown(bleach.clean(description)),
             created_by_user_id=created_by_user_id,
             catagory_id=catagory_id
