@@ -135,8 +135,8 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                 class: 'catagories tiles',
             }).appendTo(div);
             var containerDiv = div.find('div.catagories');
-            var newFormDiv = 'new-item-form-div-' + i;
             for (var i = 0; i < result.catagories.length; i++) {
+              var newFormDiv = 'new-item-form-div-' + i;
                 catagory = result.catagories[i];
                 var thisID = 'catagory-' + i;
 
@@ -168,24 +168,45 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                     id: 'new-item-button-' + i,
                     class: 'myButton fa fa-plus-circle item-more no-display',
                     style: 'cursor: pointer;',
-                    onclick: 'hideMeShowOther(this, "#' + newFormDiv + '");',
+                    onclick: 'showForm("#' + newFormDiv + '","newItem","#new-item-button-' + i  +'",' + catagory.id + ');',
                     text: 'Add a new item.'
                 }).appendTo(thisContainer);
 
                 jQuery('<div/>', {
                     id: newFormDiv,
-                    class: 'add-item item-close no-display'
+                    class: 'add-item item-more no-display'
                 }).appendTo(thisContainer);
 
-                thisContainer.children('#' + newFormDiv).append(itemForm(
-                    method='post',
-                    url='json/catalog/' + catagory.id + '/',
-                    type='Item',
-                    hideButton='#new-item-button-'+i,                    showDiv='#' + newFormDiv
-                ));
+                // thisContainer.children('#' + newFormDiv).append(itemForm(
+                //     method='post',
+                //     url='json/catalog/' + catagory.id + '/',
+                //     type='Item',
+                //     hideButton='#new-item-button-'+i,                    showDiv='#' + newFormDiv
+                // ));
             }
         }
     });
+}
+
+function showForm(containerDiv, request, hideButton, catagoryID) {
+  $(containerDiv).empty();
+  $(hideButton).hide();
+  $(containerDiv).show();
+  var method = 'post';
+  var type = 'Item';
+  var url = 'json/catalog/' + catagoryID + '/';
+  if (request === 'newCatagory') {
+    type = 'Catagory';
+    url = 'json/catalog/';
+  }
+  console.log($(containerDiv));
+  $(containerDiv).append(itemForm(
+      method=method,
+      url=url,
+      type=type,
+      hideButton=hideButton,
+      showDiv=containerDiv
+  ));
 }
 
 function hideMeShowOther(thisButton, targetForm) {
