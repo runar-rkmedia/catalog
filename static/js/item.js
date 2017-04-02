@@ -65,16 +65,18 @@ function catagoryDisplayMore(index, type, id, thisDiv) {
 }
 
 // Expand the selected item.
-function itemDisplayMore(type, thisDiv) {
+function itemDisplayMore(type, thisDiv, openThis=true) {
     var thisItem = $(thisDiv);
     thisItem.parent().children().removeClass(type + '-expand');
     thisItem.parent().children().children('div.item-more').css('display', 'none');
     thisItem.parent().children().children('div.item-close').css('display', 'none');
-    thisItem.addClass(type + '-expand');
-    thisItem.children('.item-more').css('display', 'block');
-    $('html, body').animate({
-    scrollTop: thisItem.offset().top - 100
-}, 200);
+    if (openThis) {
+      thisItem.addClass(type + '-expand');
+      thisItem.children('.item-more').css('display', 'block');
+      $('html, body').animate({
+      scrollTop: thisItem.offset().top - 100
+  }, 200);
+    }
 }
 
 // Retrieve items from server
@@ -107,18 +109,26 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                 class: 'catagories tiles',
             }).appendTo(div);
             var containerDiv = div.find('div.catagories');
+            var newFormDiv = 'new-item-form-div-' + i
             for (var i = 0; i < result.catagories.length; i++) {
                 catagory = result.catagories[i];
                 var thisID = 'catagory-' + i;
+
                 jQuery('<div/>', {
                     id: thisID,
                     class: 'catagory tile',
-                    style: 'cursor: pointer;'
                 }).appendTo(containerDiv);
                 var thisContainer = containerDiv.find('#' + thisID);
+
+                jQuery('<div/>', {
+                    class: 'fa fa-close button-close  item-more no-display u-pull-right',
+                  onclick: 'itemDisplayMore("catagory","#' + thisID + '", openThis=false);'
+                }).appendTo(thisContainer);
+
                 jQuery('<div/>', {
                     class: 'catagory-name',
                     text: catagory.name,
+                    style: 'cursor: pointer;',
                     onclick: 'catagoryDisplayMore(' + [
                             i,
                             "'catagory'", +
@@ -127,21 +137,25 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                         ].join(",") +
                         ');'
                 }).appendTo(thisContainer);
+
                 jQuery('<div/>', {
                     class: 'catagory-desc item-more no-display',
                     html: catagory.description
                 }).appendTo(thisContainer);
-                var newFormDiv = 'new-item-form-div-' + i
+
                 jQuery('<div/>', {
                     id: 'new-item-button-' + i,
                     class: 'myButton fa fa-plus-circle item-more no-display',
+                    style: 'cursor: pointer;',
                     onclick: 'hideMeShowOther(this, "#' + newFormDiv + '");',
                     text: 'Add a new item.'
                 }).appendTo(thisContainer);
+
                 jQuery('<div/>', {
                     id: newFormDiv,
                     class: 'add-item item-close no-display'
                 }).appendTo(thisContainer);
+
                 thisContainer.children('#' + newFormDiv).append(itemForm(
                     method='post',
                     url='json/catalog/' + catagory.id + '/',

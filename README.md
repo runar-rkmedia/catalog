@@ -7,12 +7,18 @@
 
 [Flask extensions](http://flask.pocoo.org/extensions/)
 
-##Requirements:
+## Requirements:
 
 ```Shell
 pip freeze > requirements.txt
 pip install -r requirements.txt
 ```
+
+# Choices made
+
+- `flask-dance` to easily set up OAuth-providers.
+- Single-Page App(SPA) with ajax-calls to server, and rendering as much as possible in jquery.
+- Markdown is supported as input for the description-field in both catagory and items, but for sequrity, html is not. The input is cleaned using `bleach`, and then parsed to markdown before being stored on the server. Doing this in the database is a lot faster than parsing it on the fly. However, it is not as flexible.
 
 ## Setting up the database
 
