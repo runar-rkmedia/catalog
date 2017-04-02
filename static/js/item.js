@@ -19,6 +19,37 @@ String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
 
         return str;
     };
+
+var newItemForm = `<form id={formID} onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');">
+              <input type="hidden" name="_method" value="{method}"/>
+                <div class="row">
+                    <div class="six columns">
+                        <label for="form-name">{type} name</label>
+                        <input class="u-full-width" type="text" name="{type}-name" id="form-name" placeholder="Title">
+                    </div>
+                </div>
+                <label for="form-desc">Description</label>
+                <textarea name="{type}-desc" class="u-full-width" placeholder="Something awesome goes here" id="form-desc"></textarea>
+                <ul class="error"></ul>
+                <input class="button-cancel"type="button" value="Cancel" onclick="hideMeShowOther('{hideButton}', '{showDiv}');">
+                <input class="button-primary u-pull-right" type="submit" value="Submit">
+            </form>
+`;
+
+function itemForm(method, url, type, hideButton, showDiv=null) {
+    var formID = ['form', method, type].join('-');
+    if (!showDiv) {
+      showDiv = '#' + formID;
+    }
+    return newItemForm.formatUnicorn({
+        formID: formID,
+        method: method,
+        url: url,
+        type: type,
+        hideButton: hideButton,
+        showDiv: showDiv,
+    });
+}
 // Expand the selected catagory, and retrieve subitems.
 function catagoryDisplayMore(index, type, id, thisDiv) {
     itemDisplayMore(type, thisDiv);
@@ -63,36 +94,6 @@ function getItems(url, div) {
         }
     });
 }
-
-function itemForm(method, url, type, hideButton, showDiv=null) {
-    var formID = ['form', method, type].join('-');
-    if (!showDiv) {
-      showDiv = '#' + formID;
-    }
-    return newItemForm.formatUnicorn({
-        formID: formID,
-        method: method,
-        url: url,
-        type: type,
-        hideButton: hideButton,
-        showDiv: showDiv,
-    });
-}
-var newItemForm = `<form id={formID} onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');">
-              <input type="hidden" name="_method" value="{method}"/>
-                <div class="row">
-                    <div class="six columns">
-                        <label for="form-name">{type} name</label>
-                        <input class="u-full-width" type="text" name="{type}-name" id="form-name" placeholder="Title">
-                    </div>
-                </div>
-                <label for="form-desc">Description</label>
-                <textarea name="{type}-desc" class="u-full-width" placeholder="Something awesome goes here" id="form-desc"></textarea>
-                <ul class="error"></ul>
-                <input type="button" value="Cancel" onclick="hideMeShowOther('{hideButton}', '{showDiv}');">
-                <input class="button-primary u-pull-right" type="submit" value="Submit">
-            </form>
-`;
 // Retrueve catagories from server
 function getCatagories(url = '/json/catalog/', div = $('.catag')) {
     div.empty();
