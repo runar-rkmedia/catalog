@@ -66,7 +66,9 @@ function catagoryDisplayMore(index, type, id, thisDiv) {
 
 // Expand the selected item.
 function itemDisplayMore(type, thisDiv, openThis=true) {
+  console.log(thisDiv);
     var thisItem = $(thisDiv);
+    console.log(thisItem);
     thisItem.parent().children().removeClass(type + '-expand');
     thisItem.parent().children().children('div.item-more').css('display', 'none');
     thisItem.parent().children().children('div.item-close').css('display', 'none');
@@ -77,10 +79,9 @@ function itemDisplayMore(type, thisDiv, openThis=true) {
         jQuery('<div/>', {
           class: 'fa fa-close button-close  item-more u-pull-right',
           style: 'cursor: pointer;',
-          onclick: 'itemDisplayMore("catagory","' + thisDiv + '", openThis=false);'
+          onclick: 'itemDisplayMore("'+type+'","#' + thisItem.attr('id') + '", openThis=false);'
         }).prependTo(thisItem);
       }
-      console.log(thisItem);
 
       $('html, body').animate({
       scrollTop: thisItem.offset().top - 100
@@ -101,10 +102,26 @@ function getItems(url, div) {
                 jQuery('<div/>', {
                     id: 'item-' + i,
                     class: 'item tile',
-                    style: 'cursor: pointer;',
-                    onclick: 'itemDisplayMore("item",this);',
-                    html: item.name + '<div class="item-catagory">' + item.catagory + '</div>' + '<div class="item-description no-display item-more">' + item.description + '</div>'
                 }).appendTo(containerDiv);
+
+                var thisDiv = containerDiv.find('#item-' + i);
+
+                jQuery('<div/>', {
+                    class: 'item-name',
+                    style: 'cursor: pointer;',
+                    onclick: 'itemDisplayMore("item","#item-'+ i +'");',
+                    text: item.name
+                }).appendTo(thisDiv);
+
+                jQuery('<div/>', {
+                    class: 'item-catagory',
+                    text: item.catagory
+                }).appendTo(thisDiv.children('div.item-name'));
+
+                jQuery('<div/>', {
+                    class: 'item-description no-display item-more',
+                    html: item.description
+                }).appendTo(thisDiv);
             }
         }
     });
@@ -118,7 +135,7 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                 class: 'catagories tiles',
             }).appendTo(div);
             var containerDiv = div.find('div.catagories');
-            var newFormDiv = 'new-item-form-div-' + i
+            var newFormDiv = 'new-item-form-div-' + i;
             for (var i = 0; i < result.catagories.length; i++) {
                 catagory = result.catagories[i];
                 var thisID = 'catagory-' + i;
