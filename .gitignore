@@ -74,6 +74,6 @@ Network Trash Folder
 Temporary Items
 
 virtualEnv
-instance
+instance/
 *.db
 .static/css/
