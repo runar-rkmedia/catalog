@@ -10,7 +10,7 @@ from flask_dance.consumer.backend.sqla import (
 from flask_login import (
     UserMixin,
 )
-from flask.ext.misaka import markdown # noqa
+from flask.ext.misaka import markdown  # noqa
 import bleach
 # setup database models
 db = SQLAlchemy()
@@ -33,8 +33,22 @@ class OAuth(db.Model, OAuthConsumerMixin):
     user = db.relationship(User)
 
 
+def verifyName(name):
+    """Verify the catagory/item title."""
+    if not (2 < len(name) < 30):
+        raise ValueError(
+            "Name should be between 2 and 30 characters")
+
+
+def verifyDescription(description):
+    """Verify the catagory/item title."""
+    if not (3 < len(description) < 500):
+        raise ValueError(
+            "Description should be between 3 and 30 characters")
+
+
 class Catagory(db.Model):
-    """Catagires-table."""
+    """Catagories-table."""
     __tablename__ = 'catagories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
@@ -46,12 +60,8 @@ class Catagory(db.Model):
     @classmethod
     def create_catagory(cls, name, description, created_by_user_id):
         """Create a catagory."""
-        if not (2 < len(name) < 30):
-            raise ValueError(
-                "Name should be between 2 and 30 characters")
-        if not (3 < len(description) < 500):
-            raise ValueError(
-                "Description should be between 3 and 30 characters")
+        verifyName(name)
+        verifyDescription(description)
         cat = Catagory(
             name=bleach.clean(name),
             description=markdown(bleach.clean(description)),
@@ -87,12 +97,8 @@ class CatagoryItem(db.Model):
     def create_catagory_item(
             cls, name, description, created_by_user_id, catagory_id):
         """Create a catagory-item."""
-        if not (2 < len(name) < 30):
-            raise ValueError(
-                "Name should be between 2 and 30 characters")
-        if not (3 < len(description) < 500):
-            raise ValueError(
-                "Description should be between 3 and 30 characters")
+        verifyName(name)
+        verifyDescription(description)
         cat_item = CatagoryItem(
             name=bleach.clean(name),
             description=markdown(bleach.clean(description)),
