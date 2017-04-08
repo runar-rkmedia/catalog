@@ -47,6 +47,13 @@ def verifyDescription(description):
             "Description should be between 3 and 30 characters")
 
 
+def verifyOwner(owner_id, this_user_id):
+    """Verify that the user owns this catagory/item."""
+    if not (owner_id == this_user_id):
+        raise ValueError(
+            "You don't have permission to edit this.")
+
+
 class Catagory(db.Model):
     """Catagories-table."""
     __tablename__ = 'catagories'
@@ -56,6 +63,15 @@ class Catagory(db.Model):
     created_by_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     time_created = db.Column(db.DateTime, default=db.func.now())
     user = db.relationship(User)
+
+    @classmethod
+    def get_by_id(cls, catagory_id):
+        """Return a catagory-object by its id."""
+        cat = Catagory.query.filter_by(id=catagory_id).first()
+        if cat:
+            return cat
+        raise ValueError(
+            "Could not find a catagory with id '{}'".format(catagory_id))
 
     @classmethod
     def create_catagory(cls, name, description, created_by_user_id):
@@ -68,6 +84,17 @@ class Catagory(db.Model):
             created_by_user_id=created_by_user_id
         )
         db.session.add(cat)
+        db.session.commit()
+
+    @classmethod
+    def edit_catagory(cls, catagory_id, name, description, created_by_user_id):
+        """Create a catagory."""
+        verifyName(name)
+        verifyDescription(description)
+        cat = Catagory.get_by_id(catagory_id)
+        verifyOwner(cat.created_by_user_id, created_by_user_id)
+        cat.name = name
+        cat.description = description
         db.session.commit()
 
     @property
