@@ -66,5 +66,14 @@
   min-width: 100%;
 }
 
-.catagories{
+.crud_buttons .myButton{
+  &:not(:last-child){
+    margin-right: 10px;
+  }
+
+}
+.myButton:hover{
+  // color: $light-active-color;
+  text-decoration: underline;
+
 }

@@ -125,9 +125,9 @@ def login():
 @app.route('/')
 def view_catalog():
     """View for home."""
+    cat = Catagory.get_by_id(1)
     catagories = Catagory.query.all()
     items = CatagoryItem.query.all()
-    print(items)
     return render_template(
         'catalogs.html',
         catagories=catagories,
@@ -173,7 +173,6 @@ def json_catalog_catagory(catagory_id):
             response['error'] = 'You are not logged in'
             return jsonify(response)
         method = request.form['_method']
-        print(request.form)
         if method == 'post':
             catagory_name = request.form['Item-name']
             catagory_desc = request.form['Item-desc']
@@ -215,7 +214,6 @@ def view_catagory(catagory):
 def view_catagory_new():
     """View for creating a catagory."""
     if request.method == 'POST':
-        print(current_user.id)
         catagory_name = request.form['catagory_name']
         catagory_desc = request.form['catagory_desc']
         try:

@@ -36,10 +36,10 @@ var newItemForm = `<form id={formID} onsubmit="event.preventDefault(); return su
             </form>
 `;
 
-function itemForm(method, url, type, hideButton, showDiv=null) {
+function itemForm(method, url, type, hideButton, showDiv = null) {
     var formID = ['form', method, type].join('-');
     if (!showDiv) {
-      showDiv = '#' + formID;
+        showDiv = '#' + formID;
     }
     return newItemForm.formatUnicorn({
         formID: formID,
@@ -65,27 +65,27 @@ function catagoryDisplayMore(index, type, id, thisDiv) {
 }
 
 // Expand the selected item.
-function itemDisplayMore(type, thisDiv, openThis=true) {
-  console.log(thisDiv);
+function itemDisplayMore(type, thisDiv, openThis = true) {
+    console.log(thisDiv);
     var thisItem = $(thisDiv);
     console.log(thisItem);
     thisItem.parent().children().removeClass(type + '-expand');
     thisItem.parent().children().children('div.item-more').css('display', 'none');
     thisItem.parent().children().children('div.item-close').css('display', 'none');
     if (openThis) {
-      thisItem.addClass(type + '-expand');
-      thisItem.children('.item-more').css('display', 'block');
-      if (thisItem.children('div.button-close').length === 0) {
-        jQuery('<div/>', {
-          class: 'fa fa-close button-close  item-more u-pull-right',
-          style: 'cursor: pointer;',
-          onclick: 'itemDisplayMore("'+type+'","#' + thisItem.attr('id') + '", openThis=false);'
-        }).prependTo(thisItem);
-      }
+        thisItem.addClass(type + '-expand');
+        thisItem.children('.item-more').css('display', 'block');
+        if (thisItem.children('div.button-close').length === 0) {
+            jQuery('<div/>', {
+                class: 'fa fa-close button-close  item-more u-pull-right',
+                style: 'cursor: pointer;',
+                onclick: 'itemDisplayMore("' + type + '","#' + thisItem.attr('id') + '", openThis=false);'
+            }).prependTo(thisItem);
+        }
 
-      $('html, body').animate({
-      scrollTop: thisItem.offset().top - 100
-  }, 200);
+        $('html, body').animate({
+            scrollTop: thisItem.offset().top - 100
+        }, 200);
     }
 }
 
@@ -109,7 +109,7 @@ function getItems(url, div) {
                 jQuery('<div/>', {
                     class: 'item-name',
                     style: 'cursor: pointer;',
-                    onclick: 'itemDisplayMore("item","#item-'+ i +'");',
+                    onclick: 'itemDisplayMore("item","#item-' + i + '");',
                     text: item.name
                 }).appendTo(thisDiv);
 
@@ -136,7 +136,9 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
             }).appendTo(div);
             var containerDiv = div.find('div.catagories');
             for (var i = 0; i < result.catagories.length; i++) {
-              var newFormDiv = 'new-item-form-div-' + i;
+                var newFormDiv = 'new-item-form-div-' + i;
+                var editFormDiv = 'edit-item-form-div-' + i;
+                var deleteFormDiv = 'delete-item-form-div-' + i;
                 catagory = result.catagories[i];
                 var thisID = 'catagory-' + i;
 
@@ -154,7 +156,7 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                             i,
                             "'catagory'", +
                             catagory.id,
-                            "'#" + thisID +"'"
+                            "'#" + thisID + "'"
                         ].join(",") +
                         ');'
                 }).appendTo(thisContainer);
@@ -165,12 +167,17 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                 }).appendTo(thisContainer);
 
                 jQuery('<div/>', {
-                    id: 'new-item-button-' + i,
-                    class: 'myButton fa fa-plus-circle item-more no-display',
-                    style: 'cursor: pointer;',
-                    onclick: 'showForm("#' + newFormDiv + '","newItem","#new-item-button-' + i  +'",' + catagory.id + ');',
-                    text: 'Add a new item.'
+                    class: 'crud_buttons item-more no-display'
                 }).appendTo(thisContainer);
+
+                var crud_buttons = thisContainer.children('div.crud_buttons');
+
+                addCrudButton(
+                  crud_buttons, 'newItem', newFormDiv, catagory.id, i);
+                addCrudButton(
+                  crud_buttons, 'editCatagory', editFormDiv, catagory.id, i);
+                addCrudButton(
+                  crud_buttons, 'deleteCatagory', deleteFormDiv, catagory.id, i);
 
                 jQuery('<div/>', {
                     id: newFormDiv,
@@ -181,37 +188,62 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
     });
 }
 
+function addCrudButton(div, request, formDiv, id, i) {
+    switch (request) {
+        case 'newItem':
+            var text = 'Add a new item';
+            var classes = 'fa fa-plus-circle';
+            break;
+        case 'editCatagory':
+            var text = 'Edit this catagory';
+            var classes = 'fa fa-trash-o';
+            break;
+        case 'deleteCatagory':
+            var text = 'Delete this catagory';
+            var classes = 'fa fa-plus-circle';
+            break;
+    }
+    var thisID = request + '-' + i;
+    jQuery('<div/>', {
+        id: thisID,
+        class: 'myButton ' + classes,
+        style: 'cursor: pointer;',
+        onclick: 'showForm("#' + formDiv + '","newItem","#' + thisID + '",' + catagory.id + ');',
+        text: " " + text
+    }).appendTo(div);
+}
+
 function showForm(containerDiv, request, hideButton, catagoryID) {
-  console.log($(containerDiv));
-  $(containerDiv).empty();
-  $(hideButton).hide();
-  $(containerDiv).show();
-  var method = 'post';
-  var type = 'Item';
-  var url = 'json/catalog/' + catagoryID + '/';
-  if (request === 'newCatagory') {
-    type = 'Catagory';
-    url = 'json/catalog/';
-  }
-  console.log($(containerDiv));
-  $(containerDiv).append(itemForm(
-      method=method,
-      url=url,
-      type=type,
-      hideButton=hideButton,
-      showDiv=containerDiv
-  ));
+    console.log($(containerDiv));
+    $(containerDiv).empty();
+    $(hideButton).hide();
+    $(containerDiv).show();
+    var method = 'post';
+    var type = 'Item';
+    var url = 'json/catalog/' + catagoryID + '/';
+    if (request === 'newCatagory') {
+        type = 'Catagory';
+        url = 'json/catalog/';
+    }
+    console.log($(containerDiv));
+    $(containerDiv).append(itemForm(
+        method = method,
+        url = url,
+        type = type,
+        hideButton = hideButton,
+        showDiv = containerDiv
+    ));
 }
 
 function hideMeShowOther(thisButton, targetForm) {
     $(document).ready(function() {
-      if ($(targetForm).css('display') == 'none') {
-        $(targetForm).show();
-        $(thisButton).hide();
-      }else {
-        $(targetForm).hide();
-        $(thisButton).show();
-      }
+        if ($(targetForm).css('display') == 'none') {
+            $(targetForm).show();
+            $(thisButton).hide();
+        } else {
+            $(targetForm).hide();
+            $(thisButton).show();
+        }
         // if (!$(targetForm).length >0 ) {
         //   console.log('did not find targetForm:' + targetForm);
         // }
