@@ -59,6 +59,7 @@ class Catagory(db.Model):
     __tablename__ = 'catagories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
+    archived = db.Column(db.Boolean, unique=False, default=False)
     description = db.Column(db.String(500))
     created_by_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     time_created = db.Column(db.DateTime, default=db.func.now())
@@ -80,7 +81,7 @@ class Catagory(db.Model):
         verifyDescription(description)
         cat = Catagory(
             name=bleach.clean(name),
-            description=markdown(bleach.clean(description)),
+            description=bleach.clean(description),
             created_by_user_id=created_by_user_id
         )
         db.session.add(cat)
@@ -95,6 +96,14 @@ class Catagory(db.Model):
         verifyOwner(cat.created_by_user_id, created_by_user_id)
         cat.name = name
         cat.description = description
+        db.session.commit()
+
+    @classmethod
+    def delete_catagory(cls, catagory_id, created_by_user_id):
+        """Delete a catagory."""
+        cat = Catagory.get_by_id(catagory_id)
+        verifyOwner(cat.created_by_user_id, created_by_user_id)
+        cat.archived = True
         db.session.commit()
 
     @property
@@ -128,7 +137,7 @@ class CatagoryItem(db.Model):
         verifyDescription(description)
         cat_item = CatagoryItem(
             name=bleach.clean(name),
-            description=markdown(bleach.clean(description)),
+            description=bleach.clean(description),
             created_by_user_id=created_by_user_id,
             catagory_id=catagory_id
         )

@@ -125,7 +125,6 @@ def login():
 @app.route('/')
 def view_catalog():
     """View for home."""
-    cat = Catagory.get_by_id(1)
     catagories = Catagory.query.all()
     items = CatagoryItem.query.all()
     return render_template(
@@ -139,27 +138,27 @@ def view_catalog():
 @app.route('/json/catalog/', methods=['GET', 'POST'])
 def json_catalog():
     """Return a json of the catagories, or create a new catagory."""
+    print(request.method)
     if request.method == 'POST':
         response = {}
         if not current_user.is_authenticated:
             response['error'] = 'You are not logged in'
             return jsonify(response)
-        method = request.form['_method']
-        if method == 'post':
-            catagory_name = request.form['Catagory-name']
-            catagory_desc = request.form['Catagory-desc']
-            try:
-                Catagory.create_catagory(
-                    name=catagory_name,
-                    description=catagory_desc,
-                    created_by_user_id=current_user.id
-                )
-            except ValueError as e:
-                response['error'] = str(e)
-            else:
-                response['success'] = 'Successfully added catagory'
-            return jsonify(response)
-    catagories = Catagory.query.all()
+
+        form_name = request.form['name']
+        form_desc = request.form['desc']
+        try:
+            Catagory.create_catagory(
+                name=form_name,
+                description=form_desc,
+                created_by_user_id=current_user.id
+            )
+        except ValueError as e:
+            response['error'] = str(e)
+        else:
+            response['success'] = 'Successfully added catagory'
+        return jsonify(response)
+    catagories = Catagory.query.filter_by(archived=False).all()
     return jsonify(catagories=[i.serialize for i in catagories])
 
 
@@ -168,26 +167,59 @@ def json_catalog():
 def json_catalog_catagory(catagory_id):
     """Return a json-object of the items in a catagory."""
     response = {}
-    if request.method == 'POST':
+    print(request.method)
+    print(request.form)
+    if request.method != 'GET':
         if not current_user.is_authenticated:
             response['error'] = 'You are not logged in'
             return jsonify(response)
-        method = request.form['_method']
-        if method == 'post':
-            catagory_name = request.form['Item-name']
-            catagory_desc = request.form['Item-desc']
+
+        if request.method == 'POST':
+            form_name = request.form['name']
+            form_desc = request.form['desc']
             try:
                 CatagoryItem.create_catagory_item(
-                    name=catagory_name,
-                    description=catagory_desc,
+                    name=form_name,
+                    description=form_desc,
                     created_by_user_id=current_user.id,
                     catagory_id=catagory_id
                 )
             except ValueError as e:
                 response['error'] = str(e)
             else:
-                response['success'] = 'Successfully added item'
+                response['success'] = "Successfully edited item '{}'".format(form_name) # noqa
             return jsonify(response)
+
+        if request.method == 'PUT':
+            form_name = request.form['name']
+            form_desc = request.form['desc']
+            catagory_id = request.form['ID']
+            try:
+                Catagory.edit_catagory(
+                    name=form_name,
+                    description=form_desc,
+                    created_by_user_id=current_user.id,
+                    catagory_id=catagory_id
+                )
+            except ValueError as e:
+                response['error'] = str(e)
+            else:
+                response['success'] = "Successfully edited catagory '{}'".format(form_name) # noqa
+            return jsonify(response)
+
+        if request.method == 'DELETE':
+            catagory_id = request.form['ID']
+            try:
+                Catagory.delete_catagory(
+                    created_by_user_id=current_user.id,
+                    catagory_id=catagory_id
+                )
+            except ValueError as e:
+                response['error'] = str(e)
+            else:
+                response['success'] = 'Successfully deleted catagory'
+            return jsonify(response)
+
         response['error'] = 'we post an item'
         return jsonify(response)
     items = CatagoryItem.query.filter_by(catagory_id=catagory_id).all()

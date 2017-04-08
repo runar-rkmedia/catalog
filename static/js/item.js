@@ -20,34 +20,72 @@ String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
         return str;
     };
 
-var newItemForm = `<form id={formID} onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');">
-              <input type="hidden" name="_method" value="{method}"/>
+var newItemForm = `<form id={formID} onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
+<input type="hidden" name="ID" value="{ID}">
                 <div class="row">
                     <div class="six columns">
                         <label for="form-name">{type} name</label>
-                        <input class="u-full-width" type="text" name="{type}-name" id="form-name" placeholder="Title">
+                        <input class="u-full-width" type="text" name="name" id="form-name" placeholder="Title" value="{name}">
                     </div>
                 </div>
                 <label for="form-desc">Description</label>
-                <textarea name="{type}-desc" class="u-full-width" placeholder="Something awesome goes here" id="form-desc"></textarea>
+                <textarea name="desc" class="u-full-width" placeholder="Something awesome goes here" id="form-desc">{desc}</textarea>
                 <ul class="error"></ul>
                 <input class="button-cancel"type="button" value="Cancel" onclick="hideMeShowOther('{hideButton}', '{showDiv}');">
                 <input class="button-primary u-pull-right" type="submit" value="Submit">
             </form>
 `;
 
-function itemForm(method, url, type, hideButton, showDiv = null) {
+var deleteForm = `<form id={formID} onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
+<input type="hidden" name="ID" value="{ID}">
+                <div class="row">
+                Are you sure you want to delete this {type}
+                <ul class="error"></ul>
+                <input class="button-cancel"type="button" value="Cancel" onclick="hideMeShowOther('{hideButton}', '{showDiv}');">
+                <input class="button-danger u-pull-right" type="submit" value="Yes, delete this">
+            </form>
+`;
+
+function itemForm(method, url, type, hideButton, showDiv = null, itemID=-1) {
     var formID = ['form', method, type].join('-');
+    console.log('itemFormname',name);
+    console.log('itemFormdesc',desc);
     if (!showDiv) {
         showDiv = '#' + formID;
     }
-    return newItemForm.formatUnicorn({
+    var form = newItemForm;
+    switch (method) {
+        case 'delete':
+            form = deleteForm;
+            break;
+    }
+    var name = "";
+    var desc = "";
+    if (type==='Catagory') {
+      console.log(catagories);
+      for (var i = 0; i < catagories.length; i++) {
+        var thisElement = catagories[i];
+        console.log(thisElement.id, itemID);
+        if (thisElement.id === parseInt(itemID)) {
+          console.log('success', thisElement.id, itemID);
+          name = thisElement.name;
+          desc = thisElement.description;
+          console.log(name, desc);
+        }
+      }
+    }
+
+    console.log('element', name);
+    return form.formatUnicorn({
         formID: formID,
         method: method,
         url: url,
         type: type,
         hideButton: hideButton,
         showDiv: showDiv,
+        ID: itemID,
+        name: name,
+        desc: desc
     });
 }
 // Expand the selected catagory, and retrieve subitems.
@@ -126,10 +164,12 @@ function getItems(url, div) {
         }
     });
 }
+var catagories;
 // Retrueve catagories from server
 function getCatagories(url = '/json/catalog/', div = $('.catag')) {
     div.empty();
     $.getJSON(url, function(result) {
+      catagories = result.catagories;
         if (result.catagories.length > 0) {
             jQuery('<div/>', {
                 class: 'catagories tiles',
@@ -173,11 +213,11 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                 var crud_buttons = thisContainer.children('div.crud_buttons');
 
                 addCrudButton(
-                  crud_buttons, 'newItem', newFormDiv, catagory.id, i);
+                    crud_buttons, 'newItem', newFormDiv, catagory.id, i);
                 addCrudButton(
-                  crud_buttons, 'editCatagory', editFormDiv, catagory.id, i);
+                    crud_buttons, 'editCatagory', newFormDiv, catagory.id, i);
                 addCrudButton(
-                  crud_buttons, 'deleteCatagory', deleteFormDiv, catagory.id, i);
+                    crud_buttons, 'deleteCatagory', newFormDiv, catagory.id, i);
 
                 jQuery('<div/>', {
                     id: newFormDiv,
@@ -195,43 +235,69 @@ function addCrudButton(div, request, formDiv, id, i) {
             var classes = 'fa fa-plus-circle';
             break;
         case 'editCatagory':
-            var text = 'Edit this catagory';
-            var classes = 'fa fa-trash-o';
+            text = 'Edit this catagory';
+            classes = 'fa fa-trash-o';
             break;
         case 'deleteCatagory':
-            var text = 'Delete this catagory';
-            var classes = 'fa fa-plus-circle';
+            text = 'Delete this catagory';
+            classes = 'fa fa-plus-circle';
             break;
     }
     var thisID = request + '-' + i;
+    var parameters = ['#' + formDiv, request, '#' + thisID, id].join('","');
     jQuery('<div/>', {
         id: thisID,
         class: 'myButton ' + classes,
         style: 'cursor: pointer;',
-        onclick: 'showForm("#' + formDiv + '","newItem","#' + thisID + '",' + catagory.id + ');',
+        onclick: 'showForm("' + parameters + '");',
         text: " " + text
     }).appendTo(div);
 }
 
-function showForm(containerDiv, request, hideButton, catagoryID) {
-    console.log($(containerDiv));
+function showForm(containerDiv, request, hideButton, itemID=-1, name="", desc="") {
     $(containerDiv).empty();
     $(hideButton).hide();
     $(containerDiv).show();
     var method = 'post';
     var type = 'Item';
-    var url = 'json/catalog/' + catagoryID + '/';
-    if (request === 'newCatagory') {
-        type = 'Catagory';
-        url = 'json/catalog/';
+    var headline = '';
+    var headlineClasses = '';
+    var url = 'json/catalog/' + itemID + '/';
+    switch (request) {
+        case 'newCatagory':
+            type = 'Catagory';
+            headline = 'Create a new catagory';
+            url = 'json/catalog/';
+            break;
+        case 'newItem':
+            type = 'Item';
+            headline = 'Create a new item under catagory';
+            break;
+        case 'editCatagory':
+            type = 'Catagory';
+            headline = 'Edit catagory';
+            method = 'put';
+            break;
+        case 'deleteCatagory':
+            type = 'Catagory';
+            headline = 'Delete catagory';
+            headlineClasses = 'danger';
+            method = 'delete';
+            break;
     }
-    console.log($(containerDiv));
+    jQuery('<h3/>', {
+        class: headlineClasses,
+        text: headline
+    }).appendTo($(containerDiv));
     $(containerDiv).append(itemForm(
         method = method,
         url = url,
         type = type,
         hideButton = hideButton,
-        showDiv = containerDiv
+        showDiv = containerDiv,
+        itemID = itemID,
+        name = name,
+        desc = name
     ));
 }
 
@@ -264,10 +330,9 @@ $(function() {
 
 function submitForm(thisForm, url, showOnSuccess) {
     thisForm = $(thisForm);
-    console.log(url);
     $.ajax({
         url: url,
-        type: 'post',
+        type: thisForm.attr('method'),
         dataType: 'json',
         data: thisForm.serialize(),
         success: function(data) {
