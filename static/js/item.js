@@ -201,9 +201,11 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                         ');'
                 }).appendTo(thisContainer);
 
+                // TODO: only parse when showing item
+
                 jQuery('<div/>', {
                     class: 'catagory-desc item-more no-display',
-                    html: catagory.description
+                    html: markdown.toHTML(catagory.description)
                 }).appendTo(thisContainer);
 
                 jQuery('<div/>', {
