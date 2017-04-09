@@ -50,6 +50,18 @@ login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 
+def update_DB_output_json(success_msg, func, **kwargs):
+    """."""
+    response = {}
+    try:
+        func(**kwargs)
+    except ValueError as e:
+        response['error'] = str(e)
+    else:
+        response['success'] = success_msg  # noqa
+    return jsonify(response)
+
+
 @login_manager.user_loader
 def load_user(user_id):
     """Return user by user_id."""
@@ -204,18 +216,6 @@ def json_catalog_catagory(catagory_id):
     return jsonify(items=[i.serialize for i in items])
 
 
-def update_DB_output_json(success_msg, func, **kwargs):
-    """."""
-    response = {}
-    try:
-        func(**kwargs)
-    except ValueError as e:
-        response['error'] = str(e)
-    else:
-        response['success'] = success_msg  # noqa
-    return jsonify(response)
-
-
 @app.route('/json/catalog/<int:catagory_id>/<int:item_id>/', methods=[
     'GET', 'PUT', 'DELETE'])
 def json_catalog_catagory_items(catagory_id, item_id):
@@ -252,71 +252,6 @@ def json_catalog_catagory_latest_items():
     return jsonify(items=[i.serialize for i in items])
 
 
-@app.route('/catalog/<catagory>')
-def view_catagory(catagory):
-    """View for catagories."""
-    catagory = Catagory.query.filter_by(name=catagory).first()
-    items = CatagoryItem.query.filter_by(catagory_id=catagory.id).all()
-    return render_template('catagory.html', catagory=catagory, items=items)
-
-
-@app.route('/new/catalog/catagory/', methods=['GET', 'POST'])
-@login_required
-def view_catagory_new():
-    """View for creating a catagory."""
-    if request.method == 'POST':
-        catagory_name = request.form['catagory_name']
-        catagory_desc = request.form['catagory_desc']
-        try:
-            Catagory.create(
-                name=catagory_name,
-                description=catagory_desc,
-                created_by_user_id=current_user.id
-            )
-        except ValueError as e:
-            flash(e)
-        else:
-            flash("Successfully created catagory.")
-            return redirect(url_for('view_catalog'))
-    return render_template('new_catagory.html')
-
-
-@app.route('/edit/catalog/<catagory>/')
-def view_catagory_edit(catagory):
-    """View for editing a catagory."""
-    return 'Editing catagory {!s}'.format(catagory)
-
-
-@app.route('/delete/catalog/<catagory>/')
-def view_catagory_delete(catagory):
-    """View for deleting a catagory."""
-    return 'Deleting catagory {!s}'.format(catagory)
-
-
-@app.route('/catalog/<catagory>/<item>')
-def view_catagory_item(catagory, item):
-    """View an item under a catagory."""
-    return 'catagory {!s} {!s}'.format(catagory, item)
-
-
-@app.route('/new/catalog/<catagory>')
-def view_catagory_new_item(catagory):
-    """Create a new item under a catagory."""
-    return 'catagory {!s}'.format(catagory)
-
-
-@app.route('/edit/catalog/<catagory>/<item>')
-def view_catagory_edit_item(catagory, item):
-    """View for editing an item under a catagory."""
-    return 'Editing item {!s} from {!s}'.format(item, catagory)
-
-
-@app.route('/delete/catalog/<catagory>/<item>')
-def view_catagory_delete_item(catagory, item):
-    """View for deleting an item under a catagory."""
-    return 'Deleting item {!s} from {!s}'.format(item, catagory)
-
-
 @app.errorhandler(404)
 def page_not_found(error):
     """View for pages not found."""
@@ -335,6 +270,6 @@ if __name__ == "__main__":
             print("Database tables created")
     else:
         app.run(debug=True)
-        # setup scss-folders
-
-Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
+if app.debug:
+    # setup scss-folders
+    Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
