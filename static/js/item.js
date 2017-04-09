@@ -257,7 +257,7 @@ function addCrudButton(div, request, type, formDiv, id) {
             break;
         case 'delete':
             text = 'Delete this ' + type;
-            classes = 'fa fa-plus-circle';
+            classes = 'fa fa-trash-o';
             break;
     }
     var parameters = [formDiv, request, type, div.id, id].join('","');
