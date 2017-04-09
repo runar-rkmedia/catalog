@@ -38,7 +38,6 @@ app = Flask(__name__, instance_relative_config=True)
 configure_app(app)
 
 
-
 # Add github-blueprint for oauth
 blueprint = make_github_blueprint(
     client_id=app.config['GITHUB_CLIENT_ID'],
@@ -57,6 +56,7 @@ assets = Environment(app)
 js = Bundle('js/item.js',
             filters='rjsmin', output='js/minified.js')
 assets.register('js_all', js)
+
 
 def update_DB_output_json(success_msg, func, **kwargs):
     """."""
@@ -216,9 +216,13 @@ def json_catalog_catagory(catagory_id):
             created_by_user_id=current_user.id,
             catagory_id=catagory_id
         )
-
-    items = CatagoryItem.query.filter_by(
-        catagory_id=catagory_id, archived=False).all()
+    items = CatagoryItem.query.join(
+        CatagoryItem.catagory
+    ).filter(
+        CatagoryItem.catagory_id == catagory_id,
+        Catagory.archived == False, # noqa
+        CatagoryItem.archived == False, # noqa
+    ).all()
     return jsonify(items=[i.serialize for i in items])
 
 
@@ -254,7 +258,14 @@ def json_catalog_catagory_items(catagory_id, item_id):
 @app.route('/json/catalog/items/latest/')
 def json_catalog_catagory_latest_items():
     """Return a json-object of the items in a catagory."""
-    items = CatagoryItem.query.order_by('time_created').limit(10)
+    items = CatagoryItem.query.join(
+        CatagoryItem.catagory
+    ).filter(
+        Catagory.archived == False, # noqa
+        CatagoryItem.archived == False, # noqa
+    ).order_by(
+        'time_created'
+    ).limit(10)
     return jsonify(items=[i.serialize for i in items])
 
 

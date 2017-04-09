@@ -126,7 +126,8 @@ class CatagoryItem(db.Model):
     created_by_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     catagory_id = db.Column(db.Integer, db.ForeignKey(Catagory.id))
     time_created = db.Column(db.DateTime, default=db.func.now())
-    catagory = db.relationship(Catagory)
+    catagory = db.relationship(
+        Catagory, primaryjoin='CatagoryItem.catagory_id==Catagory.id')
     user = db.relationship(User)
 
     @classmethod
