@@ -20,7 +20,8 @@ String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
         return str;
     };
 
-var newItemForm = `<form onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
+// Form used for creating and editing catagories and items
+var cuForm = `<form onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
                 <div class="row">
                     <div class="six columns">
                         <label for="form-name">{type} name</label>
@@ -35,7 +36,8 @@ var newItemForm = `<form onsubmit="event.preventDefault(); return submitForm(thi
             </form>
 `;
 
-var deleteForm = `<form onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
+// Form used for deleting items and catagories.
+var dForm = `<form onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
                 <div class="row">
                 Are you sure you want to delete this {type}
                 <ul class="error"></ul>
@@ -44,11 +46,20 @@ var deleteForm = `<form onsubmit="event.preventDefault(); return submitForm(this
             </form>
 `;
 
-function itemForm(method, url, type, hideButton, showDiv = null, itemID = '', name='', desc='') {
-    var form = newItemForm;
+// Parse the right form with the correct information
+function itemForm(method, url, type, hideButton, showDiv = null, elementID = '', name = '', desc = '') {
+    // method       the verb (get,post,put,delete)
+    // url          url to use
+    // type         'catagory' or 'item'
+    // hideButton   button to hide.
+    // showDiv      a div to show
+    // elementID    ID of the element in the database
+    // name         used when editing to fill in the previus value
+    // desc         used when editing to fill in the previus value
+    var form = cuForm;
     switch (method) {
         case 'delete':
-            form = deleteForm;
+            form = dForm;
             break;
     }
     return form.formatUnicorn({
@@ -57,16 +68,18 @@ function itemForm(method, url, type, hideButton, showDiv = null, itemID = '', na
         type: type,
         hideButton: hideButton,
         showDiv: showDiv,
-        ID: itemID,
+        ID: elementID,
         name: name,
         desc: desc
     });
 }
 var items;
 
-// Retrieve items from server
+// Retrieve items from server, and output to site.
 function getItems(url, div) {
-  div.empty();
+  // url  url to use
+  // div  div to put items into
+    div.empty();
     $.getJSON(url, function(result) {
         if (result.items.length > 0) {
             items = result.items;
@@ -113,7 +126,10 @@ function getItems(url, div) {
 }
 var catagories;
 
-function getElementByID(type, catID) {
+// Retrieve a catagory or item from previously cached content
+function getElementByID(type, elementID) {
+  // type       'catagory' or 'item'
+  // elementID  the ID of this element in the database
     var elements;
     switch (type.toLowerCase()) {
         case 'catagory':
@@ -126,32 +142,37 @@ function getElementByID(type, catID) {
     if (elements) {
         for (var i = 0; i < elements.length; i++) {
             var thisElement = elements[i];
-            if (thisElement.id === parseInt(catID)) {
+            if (thisElement.id === parseInt(elementID)) {
                 return thisElement;
             }
         }
     }
 }
-// Retrueve catagories from server
+// Retrieve catagories from server
 function getCatagories(url = '/json/catalog/', div = $('.catag')) {
     div.empty();
     $.getJSON(url, function(result) {
         if (result.catagories.length > 0) {
             catagories = result.catagories;
+
+            // Container-div for elements
             jQuery('<div/>', {
                 class: 'catagories tiles',
             }).appendTo(div);
+
             var containerDiv = div.find('div.catagories');
             for (var i = 0; i < result.catagories.length; i++) {
                 catagory = result.catagories[i];
                 var thisID = 'catagory-' + i;
 
+                // Container-div for this element
                 jQuery('<div/>', {
                     id: thisID,
                     class: 'catagory tile',
                 }).appendTo(containerDiv);
                 var thisContainer = containerDiv.children('#' + thisID);
 
+                // Name-div (clickable)
                 jQuery('<div/>', {
                     class: 'catagory-name',
                     text: catagory.name,
@@ -165,14 +186,17 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                         ');'
                 }).appendTo(thisContainer);
 
+                // Description-div
                 jQuery('<div/>', {
                     class: 'catagory-desc item-more no-display',
                 }).appendTo(thisContainer);
 
+                // Buttons-container
                 jQuery('<div/>', {
                     class: 'crud_buttons item-more no-display'
                 }).appendTo(thisContainer);
 
+                // Form-container
                 jQuery('<div/>', {
                     class: 'add-item form item-more no-display'
                 }).appendTo(thisContainer);
@@ -200,9 +224,13 @@ function catagoryDisplayMore(index, type, id, thisDiv, refresh = false) {
     }
 }
 
-// Expand the selected item.
+// Expand the selected element.
 function elementDisplayMore(type, thisDiv, openThis = true, id = -1) {
     var thisItem = $(thisDiv);
+    // type    : 'catagory' or 'item'
+    // thisDiv : the div we are expanding
+    // openThis: bool, should it expand or close?
+    // id      : id of element in database
     thisItem.parent().children().removeClass(type + '-expand');
     thisItem.parent().children().children('div.item-more').css('display', 'none');
     thisItem.parent().children().children('div.item-close').css('display', 'none');
@@ -219,9 +247,11 @@ function elementDisplayMore(type, thisDiv, openThis = true, id = -1) {
         var formDiv = thisDiv + ' .form';
         var element = getElementByID(type, id);
         var descDiv = thisItem.children('div.' + type + '-desc');
+        // Only add content if it is not already there.
         if (descDiv.is(':empty')) {
             descDiv.html(markdown.toHTML(element.description));
 
+            // If user is logged in, add buttons to this element
             if (userLoggedIn()) {
                 var crud_buttons = thisItem.children('div.crud_buttons');
                 if (type === 'catagory') {
@@ -234,14 +264,18 @@ function elementDisplayMore(type, thisDiv, openThis = true, id = -1) {
                     crud_buttons, 'delete', type, formDiv, element.id);
             }
         }
-
         $('html, body').animate({
             scrollTop: thisItem.offset().top - 100
         }, 200);
     }
 }
-
+// Add a button Create, Update, Delete -> Catagory and Item
 function addCrudButton(div, request, type, formDiv, id) {
+  // div    :The div to put button inn in
+  // request:'new', 'edit', or 'delete'
+  // type   :'catagory' or 'item'
+  // formDiv:Divcontainer for the form
+  // id     :id of the element in the database
     var text = '';
     var classes = '';
     switch (request) {
@@ -267,7 +301,13 @@ function addCrudButton(div, request, type, formDiv, id) {
     }).appendTo(div);
 }
 
+// Create the correct form needed and show it.
 function showForm(containerDiv, request, type, hideButton, elementID = -1) {
+  // containerDiv: Div to put form in
+  // request     : 'new', 'edit' or 'delete'
+  // type        : 'catagory' or 'item'
+  // hideButton  : 'a button to hide on success'
+  // elementID   : the id of the element in the database
     var cDiv = $(containerDiv + ':first');
     cDiv.empty();
     $(hideButton).hide();
@@ -277,8 +317,10 @@ function showForm(containerDiv, request, type, hideButton, elementID = -1) {
     var name = '';
     var desc = '';
     var headlineClasses = '';
-    var url = 'json/catalog/';
     var element = getElementByID(type, elementID);
+
+    // Use the correct url
+    var url = 'json/catalog/';
     switch (request + type) {
         case 'newitem':
         case 'editcatagory':
@@ -290,6 +332,7 @@ function showForm(containerDiv, request, type, hideButton, elementID = -1) {
             url += element.catagory_id + '/' + elementID + '/';
             break;
     }
+    // Use the correct headline and method
     switch (request + type) {
         case 'newitem':
         case 'newcatagory':
@@ -310,14 +353,17 @@ function showForm(containerDiv, request, type, hideButton, elementID = -1) {
             method = 'delete';
             break;
     }
+    // If editing, we fill in the existing name and description in the form
     if (request === 'edit') {
-      name = element.name;
-      desc = element.description;
+        name = element.name;
+        desc = element.description;
     }
+    // Create a headline for this form
     jQuery('<h3/>', {
         class: headlineClasses,
         text: headline
     }).appendTo(cDiv);
+    // Create the form.
     cDiv.append(itemForm(
         method = method,
         url = url,
@@ -328,8 +374,11 @@ function showForm(containerDiv, request, type, hideButton, elementID = -1) {
         name = name,
         desc = desc
     ));
+    // Focus the first text-field (if any)
+    cDiv.find("input:text:visible:first").focus();
 }
 
+// Will Hide the first element, and show the second.
 function hideMeShowOther(thisButton, targetForm) {
     $(document).ready(function() {
         if ($(targetForm).css('display') == 'none') {
@@ -339,18 +388,14 @@ function hideMeShowOther(thisButton, targetForm) {
             $(targetForm).hide();
             $(thisButton).show();
         }
-        // $("input:text:visible:first").focus();
     });
 }
-// General handler for forms.
-$(function() {
-    $("form").submit(function(e) {
-        e.preventDefault();
-    });
 
-});
-
+// Handle submitting forms
 function submitForm(thisForm, url, showOnSuccess) {
+    // thisForm:      (this) the origin form
+    // url:           the url to go to
+    // showOnSuccess: buttons to be displayed after submitting
     thisForm = $(thisForm);
     $.ajax({
         url: url,
@@ -377,6 +422,7 @@ function submitForm(thisForm, url, showOnSuccess) {
     });
 }
 
+// Remove all notifications
 function clearNotifications(errorDiv = null) {
     if (!errorDiv || errorDiv.length === 0) {
         errorDiv = $('ul.flashes');
@@ -384,11 +430,15 @@ function clearNotifications(errorDiv = null) {
     $(errorDiv).empty();
 }
 
+// Output a notification.
 function addNotification(type, msg, errorDiv = null) {
+    // args
+    // type:      'catagory' or 'item'
+    // msg:       the message to be displayed
+    // errordiv:  an optional div to output the error to instead of the top notification-bar. Useful for forms.
     if (!errorDiv || errorDiv.length === 0) {
         errorDiv = $('ul.flashes');
     }
-    // clearNotifications();
     jQuery('<li/>', {
         class: type,
         text: msg
@@ -397,18 +447,23 @@ function addNotification(type, msg, errorDiv = null) {
     setTimeout(dismiss, 8000);
 }
 
+// Dismiss a notification
 function dismiss(fadeTime = 400) {
     $('div.notifications').fadeOut(fadeTime, clearNotifications());
 }
 $(document).ready(function() {
+    // If a notification is sent from flask, display it.
     var flashli = $('ul.flashes').find('li');
     if (flashli.length > 0) {
         $('div.notifications').show();
         setTimeout(dismiss, 8000);
     }
+    // add a placeholder-div for adding a form.
     jQuery('<div/>', {
         id: 'new-add-catagory-form-div',
         class: 'add-addCatagory no-display'
     }).appendTo($("div.add-catagory"));
+    // retrieve tha latest items
+    getCatagories();
     getItems('/json/catalog/items/latest/', $('.items'));
 });
