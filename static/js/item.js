@@ -45,102 +45,6 @@ var deleteForm = `<form id={formID} onsubmit="event.preventDefault(); return sub
                 <input class="button-danger u-pull-right" type="submit" value="Yes, delete this">
             </form>
 `;
-
-function getCatagoryByID(catID) {
-  for (var i = 0; i < catagories.length; i++) {
-    var thisElement = catagories[i];
-    if (thisElement.id === parseInt(catID)) {
-      return thisElement;
-    }
-  }
-}
-
-function itemForm(method, url, type, hideButton, showDiv = null, itemID='') {
-    var formID = ['form', method, type].join('-');
-    if (!showDiv) {
-        showDiv = '#' + formID;
-    }
-    var form = newItemForm;
-    switch (method) {
-        case 'delete':
-            form = deleteForm;
-            break;
-    }
-    var name = "";
-    var desc = "";
-    if (itemID >= 0) {
-      if (type==='Catagory') {
-        var thisElement = getCatagoryByID(itemID);
-        if (thisElement) {
-          name = thisElement.name;
-          desc = thisElement.description;
-        }
-    }
-    }
-    return form.formatUnicorn({
-        formID: formID,
-        method: method,
-        url: url,
-        type: type,
-        hideButton: hideButton,
-        showDiv: showDiv,
-        ID: itemID,
-        name: name,
-        desc: desc
-    });
-}
-// Expand the selected catagory, and retrieve subitems.
-function catagoryDisplayMore(index, type, id, thisDiv) {
-    itemDisplayMore(type, thisDiv);
-    var thisItem = $(thisDiv);
-    var newDivID = 'catagory-' + index + '-items';
-    if (document.getElementById(newDivID) === null) {
-        jQuery('<div/>', {
-            id: newDivID = newDivID,
-            class: 'item-more'
-        }).appendTo(thisDiv);
-        getItems('/json/catalog/' + id, $('#' + newDivID));
-    }
-    var formDiv = thisDiv + ' .form';
-    var catagory = getCatagoryByID(id);
-    var descDiv = thisItem.children('div.catagory-desc');
-    if (descDiv.is(':empty')) {
-      descDiv.html(markdown.toHTML(catagory.description));
-
-      var crud_buttons = thisItem.children('div.crud_buttons');
-
-      addCrudButton(
-        crud_buttons, 'newItem', formDiv, catagory.id, index);
-        addCrudButton(
-          crud_buttons, 'editCatagory', formDiv, catagory.id, index);
-          addCrudButton(
-            crud_buttons, 'deleteCatagory', formDiv, catagory.id, index);
-    }
-}
-
-// Expand the selected item.
-function itemDisplayMore(type, thisDiv, openThis = true) {
-    var thisItem = $(thisDiv);
-    thisItem.parent().children().removeClass(type + '-expand');
-    thisItem.parent().children().children('div.item-more').css('display', 'none');
-    thisItem.parent().children().children('div.item-close').css('display', 'none');
-    if (openThis) {
-        thisItem.addClass(type + '-expand');
-        thisItem.children('.item-more').css('display', 'block');
-        if (thisItem.children('div.button-close').length === 0) {
-            jQuery('<div/>', {
-                class: 'fa fa-close button-close  item-more u-pull-right',
-                style: 'cursor: pointer;',
-                onclick: 'itemDisplayMore("' + type + '","#' + thisItem.attr('id') + '", openThis=false);'
-            }).prependTo(thisItem);
-        }
-
-        $('html, body').animate({
-            scrollTop: thisItem.offset().top - 100
-        }, 200);
-    }
-}
-
 // Retrieve items from server
 function getItems(url, div) {
     $.getJSON(url, function(result) {
@@ -167,23 +71,32 @@ function getItems(url, div) {
 
                 jQuery('<div/>', {
                     class: 'item-catagory',
-                    text: item.catagory
+                    text: (item.catagory)
                 }).appendTo(thisDiv.children('div.item-name'));
 
                 jQuery('<div/>', {
                     class: 'item-description no-display item-more',
-                    html: item.description
+                    html: markdown.toHTML(item.description)
                 }).appendTo(thisDiv);
             }
         }
     });
 }
 var catagories;
+
+function getCatagoryByID(catID) {
+    for (var i = 0; i < catagories.length; i++) {
+        var thisElement = catagories[i];
+        if (thisElement.id === parseInt(catID)) {
+            return thisElement;
+        }
+    }
+}
 // Retrueve catagories from server
 function getCatagories(url = '/json/catalog/', div = $('.catag')) {
     div.empty();
     $.getJSON(url, function(result) {
-      catagories = result.catagories;
+        catagories = result.catagories;
         if (result.catagories.length > 0) {
             jQuery('<div/>', {
                 class: 'catagories tiles',
@@ -222,12 +135,98 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                 }).appendTo(thisContainer);
 
                 jQuery('<div/>', {
-                  id: formDiv,
-                  class: 'add-item form item-more no-display'
+                    id: formDiv,
+                    class: 'add-item form item-more no-display'
                 }).appendTo(thisContainer);
             }
         }
     });
+}
+
+function itemForm(method, url, type, hideButton, showDiv = null, itemID = '') {
+    var formID = ['form', method, type].join('-');
+    if (!showDiv) {
+        showDiv = '#' + formID;
+    }
+    var form = newItemForm;
+    switch (method) {
+        case 'delete':
+            form = deleteForm;
+            break;
+    }
+    var name = "";
+    var desc = "";
+    if (itemID >= 0) {
+        if (type === 'Catagory') {
+            var thisElement = getCatagoryByID(itemID);
+            if (thisElement) {
+                name = thisElement.name;
+                desc = thisElement.description;
+            }
+        }
+    }
+    return form.formatUnicorn({
+        formID: formID,
+        method: method,
+        url: url,
+        type: type,
+        hideButton: hideButton,
+        showDiv: showDiv,
+        ID: itemID,
+        name: name,
+        desc: desc
+    });
+}
+// Expand the selected catagory, and retrieve subitems.
+function catagoryDisplayMore(index, type, id, thisDiv) {
+    itemDisplayMore(type, thisDiv);
+    var thisItem = $(thisDiv);
+    var newDivID = 'catagory-' + index + '-items';
+    if (document.getElementById(newDivID) === null) {
+        jQuery('<div/>', {
+            id: newDivID = newDivID,
+            class: 'item-more'
+        }).appendTo(thisDiv);
+        getItems('/json/catalog/' + id, $('#' + newDivID));
+    }
+    var formDiv = thisDiv + ' .form';
+    var catagory = getCatagoryByID(id);
+    var descDiv = thisItem.children('div.catagory-desc');
+    if (descDiv.is(':empty')) {
+        descDiv.html(markdown.toHTML(catagory.description));
+
+        var crud_buttons = thisItem.children('div.crud_buttons');
+        //  TODO: Only show buttons when logged in.
+        addCrudButton(
+            crud_buttons, 'newItem', formDiv, catagory.id, index);
+        addCrudButton(
+            crud_buttons, 'editCatagory', formDiv, catagory.id, index);
+        addCrudButton(
+            crud_buttons, 'deleteCatagory', formDiv, catagory.id, index);
+    }
+}
+
+// Expand the selected item.
+function itemDisplayMore(type, thisDiv, openThis = true) {
+    var thisItem = $(thisDiv);
+    thisItem.parent().children().removeClass(type + '-expand');
+    thisItem.parent().children().children('div.item-more').css('display', 'none');
+    thisItem.parent().children().children('div.item-close').css('display', 'none');
+    if (openThis) {
+        thisItem.addClass(type + '-expand');
+        thisItem.children('.item-more').css('display', 'block');
+        if (thisItem.children('div.button-close').length === 0) {
+            jQuery('<div/>', {
+                class: 'fa fa-close button-close  item-more u-pull-right',
+                style: 'cursor: pointer;',
+                onclick: 'itemDisplayMore("' + type + '","#' + thisItem.attr('id') + '", openThis=false);'
+            }).prependTo(thisItem);
+        }
+
+        $('html, body').animate({
+            scrollTop: thisItem.offset().top - 100
+        }, 200);
+    }
 }
 
 function addCrudButton(div, request, formDiv, id, i) {
@@ -246,7 +245,7 @@ function addCrudButton(div, request, formDiv, id, i) {
             break;
     }
     var thisID = request + '-' + i;
-    var parameters = [formDiv, request, div.id , id].join('","');
+    var parameters = [formDiv, request, div.id, id].join('","');
     jQuery('<div/>', {
         id: thisID,
         class: 'myButton ' + classes,
@@ -256,7 +255,7 @@ function addCrudButton(div, request, formDiv, id, i) {
     }).appendTo(div);
 }
 
-function showForm(containerDiv, request, hideButton, itemID=-1, name="", desc="") {
+function showForm(containerDiv, request, hideButton, itemID = -1, name = "", desc = "") {
     $(containerDiv).empty();
     $(hideButton).hide();
     $(containerDiv).show();
