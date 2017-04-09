@@ -6,7 +6,7 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <script src="https://use.fontawesome.com/13a615c5db.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown.js/0.5.0/markdown.min.js"></script>
-<script src="{{url_for('static', filename='js/item.js')}}"></script>
+<script src="{{url_for('static', filename='js/item-min.js')}}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <div class="row notifications no-display" onclick="dismiss(this)">
@@ -28,7 +28,8 @@
     <hr>
     {% if current_user.is_authenticated %}
         You are logged in as
-        <span class="user" id="logged_in">{{ current_user.id }}</span>!
+        <span class="user">{{ current_user.username }}</span>
+        <div id="current_userid" class="no-display">{{current_user.id}}</div>
         <a href="{{ url_for('logout') }}">Log out</a>
     {% else %}
         You are not logged in.

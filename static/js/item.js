@@ -221,8 +221,8 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
 }
 // Lazy check if user is logged in. (server check all input, so no worries)
 function userLoggedIn() {
-    if ($('#logged_in').length > 0) {
-        return $('#logged_in').html();
+    if ($('#current_userid').length > 0) {
+        return $('#current_userid').html();
     }
 }
 // Expand the selected catagory, and retrieve subitems.
