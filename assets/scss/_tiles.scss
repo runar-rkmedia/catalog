@@ -81,3 +81,10 @@
   color: $danger-color;
   font-weight: bold;
 }
+.catagory-username,
+.item-username{
+  color: $grey-text-color;
+  &:before{
+    content: 'by: '
+  }
+}

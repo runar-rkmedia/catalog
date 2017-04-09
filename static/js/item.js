@@ -104,19 +104,28 @@ function getItems(url, div) {
                     text: item.name
                 }).appendTo(thisDiv);
 
+                // Catagory
                 jQuery('<div/>', {
                     class: 'item-catagory',
                     text: (item.catagory)
                 }).appendTo(thisDiv.children('div.item-name'));
 
+                // Description
                 jQuery('<div/>', {
                     class: 'item-desc item-more no-display',
                 }).appendTo(thisDiv);
 
+                // Created by user-div
+                jQuery('<div/>', {
+                    class: 'item-username item-more no-display',
+                }).appendTo(thisDiv);
+
+                // Buttons
                 jQuery('<div/>', {
                     class: 'crud_buttons item-more no-display'
                 }).appendTo(thisDiv);
 
+                // form
                 jQuery('<div/>', {
                     class: 'add-item form item-more no-display'
                 }).appendTo(thisDiv);
@@ -192,6 +201,11 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                     class: 'catagory-desc item-more no-display',
                 }).appendTo(thisContainer);
 
+                // Created by user-div
+                jQuery('<div/>', {
+                    class: 'catagory-username item-more no-display',
+                }).appendTo(thisContainer);
+
                 // Buttons-container
                 jQuery('<div/>', {
                     class: 'crud_buttons item-more no-display'
@@ -248,9 +262,11 @@ function elementDisplayMore(type, thisDiv, openThis = true, id = -1) {
         var formDiv = thisDiv + ' .form';
         var element = getElementByID(type, id);
         var descDiv = thisItem.children('div.' + type + '-desc');
+        var userDiv = thisItem.children('div.' + type + '-username');
         // Only add content if it is not already there.
         if (descDiv.is(':empty')) {
             descDiv.html(markdown.toHTML(element.description));
+            userDiv.text(element.username);
 
             // If user is logged in, add buttons to this element
             if (userLoggedIn()) {

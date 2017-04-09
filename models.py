@@ -108,11 +108,18 @@ class Catagory(db.Model):
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
+        user = User.query.filter_by(
+            id=self.created_by_user_id).first()
+        if user:
+            username = user.username
+        else:
+            username = 'unknown'
         return {
             'id': self.id,
             'name': self.name,
             'description': self.description,
             'created_by_user_id': self.created_by_user_id,
+            'username': username
         }
 
 
@@ -178,6 +185,12 @@ class CatagoryItem(db.Model):
         """Return object data in easily serializeable format"""
         catagory = Catagory.query.filter_by(
             id=self.catagory_id).first()
+        user = User.query.filter_by(
+            id=self.created_by_user_id).first()
+        if user:
+            username = user.username
+        else:
+            username = 'unknown'
         if catagory:
             catagory_name = catagory.name
         else:
@@ -189,5 +202,6 @@ class CatagoryItem(db.Model):
             'created_by_user_id': self.created_by_user_id,
             'catagory_id': self.catagory_id,
             'catagory': catagory_name,
+            'username': username,
             'time_created': self.time_created,
         }

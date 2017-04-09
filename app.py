@@ -31,7 +31,6 @@ from flask_login import (
 )
 from models import db, User, OAuth, Catagory, CatagoryItem
 from flask_scss import Scss
-from flask_assets import Environment, Bundle
 
 
 app = Flask(__name__, instance_relative_config=True)
@@ -50,12 +49,6 @@ app.register_blueprint(blueprint, url_prefix="/login")
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
-
-# To minify css, js etc.
-assets = Environment(app)
-js = Bundle('js/item.js',
-            filters='rjsmin', output='js/minified.js')
-assets.register('js_all', js)
 
 
 def update_DB_output_json(success_msg, func, **kwargs):
@@ -220,8 +213,8 @@ def json_catalog_catagory(catagory_id):
         CatagoryItem.catagory
     ).filter(
         CatagoryItem.catagory_id == catagory_id,
-        Catagory.archived == False, # noqa
-        CatagoryItem.archived == False, # noqa
+        Catagory.archived == False,  # noqa
+        CatagoryItem.archived == False,  # noqa
     ).all()
     return jsonify(items=[i.serialize for i in items])
 
@@ -261,8 +254,8 @@ def json_catalog_catagory_latest_items():
     items = CatagoryItem.query.join(
         CatagoryItem.catagory
     ).filter(
-        Catagory.archived == False, # noqa
-        CatagoryItem.archived == False, # noqa
+        Catagory.archived == False,  # noqa
+        CatagoryItem.archived == False,  # noqa
     ).order_by(
         'time_created'
     ).limit(10)
