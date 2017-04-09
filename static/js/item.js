@@ -20,6 +20,7 @@ String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
         return str;
     };
 
+
 // Form used for creating and editing catagories and items
 var cuForm = `<form onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
                 <div class="row">

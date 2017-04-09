@@ -77,3 +77,5 @@ virtualEnv
 instance/
 *.db
 static/css/
+/static/.webassets-cache
+/static/js/minified.js

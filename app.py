@@ -31,10 +31,13 @@ from flask_login import (
 )
 from models import db, User, OAuth, Catagory, CatagoryItem
 from flask_scss import Scss
+from flask_assets import Environment, Bundle
 
 
 app = Flask(__name__, instance_relative_config=True)
 configure_app(app)
+
+
 
 # Add github-blueprint for oauth
 blueprint = make_github_blueprint(
@@ -49,6 +52,11 @@ login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
+# To minify css, js etc.
+assets = Environment(app)
+js = Bundle('js/item.js',
+            filters='rjsmin', output='js/minified.js')
+assets.register('js_all', js)
 
 def update_DB_output_json(success_msg, func, **kwargs):
     """."""
@@ -147,8 +155,6 @@ def view_catalog():
 @app.route('/json/catalog/', methods=['GET', 'POST'])
 def json_catalog():
     """Return a json of the catagories, or create a new catagory."""
-    print(request.method)
-    print(request.form)
     if request.method == 'POST':
         response = {}
         if not current_user.is_authenticated:
@@ -273,3 +279,4 @@ if __name__ == "__main__":
 if app.debug:
     # setup scss-folders
     Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
+    app.config['ASSETS_DEBUG'] = True
