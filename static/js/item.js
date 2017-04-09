@@ -21,7 +21,6 @@ String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
     };
 
 var newItemForm = `<form onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
-<input type="hidden" name="ID" value="{ID}">
                 <div class="row">
                     <div class="six columns">
                         <label for="form-name">{type} name</label>
@@ -37,7 +36,6 @@ var newItemForm = `<form onsubmit="event.preventDefault(); return submitForm(thi
 `;
 
 var deleteForm = `<form onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
-<input type="hidden" name="ID" value="{ID}">
                 <div class="row">
                 Are you sure you want to delete this {type}
                 <ul class="error"></ul>
