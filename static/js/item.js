@@ -66,6 +66,7 @@ var items;
 
 // Retrieve items from server
 function getItems(url, div) {
+  div.empty();
     $.getJSON(url, function(result) {
         if (result.items.length > 0) {
             items = result.items;
@@ -367,6 +368,7 @@ function submitForm(thisForm, url, showOnSuccess) {
                         thisForm.hide();
                         $(showOnSuccess).show();
                         getCatagories();
+                        getItems('/json/catalog/items/latest/', $('.items'));
                     }
                     addNotification(k, data[k], errorDiv);
                 }
@@ -408,4 +410,5 @@ $(document).ready(function() {
         id: 'new-add-catagory-form-div',
         class: 'add-addCatagory no-display'
     }).appendTo($("div.add-catagory"));
+    getItems('/json/catalog/items/latest/', $('.items'));
 });
