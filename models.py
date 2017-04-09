@@ -10,7 +10,6 @@ from flask_dance.consumer.backend.sqla import (
 from flask_login import (
     UserMixin,
 )
-from flask.ext.misaka import markdown  # noqa
 import bleach
 # setup database models
 db = SQLAlchemy()
@@ -57,7 +56,7 @@ def verifyOwner(owner_id, this_user_id):
 class Catagory(db.Model):
     """Catagories-table."""
     __tablename__ = 'catagories'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
     archived = db.Column(db.Boolean, unique=False, default=False)
     description = db.Column(db.String(500))
@@ -75,7 +74,7 @@ class Catagory(db.Model):
             "Could not find a catagory with id '{}'".format(catagory_id))
 
     @classmethod
-    def create_catagory(cls, name, description, created_by_user_id):
+    def create(cls, name, description, created_by_user_id):
         """Create a catagory."""
         verifyName(name)
         verifyDescription(description)
@@ -88,7 +87,7 @@ class Catagory(db.Model):
         db.session.commit()
 
     @classmethod
-    def edit_catagory(cls, catagory_id, name, description, created_by_user_id):
+    def edit(cls, catagory_id, name, description, created_by_user_id):
         """Create a catagory."""
         verifyName(name)
         verifyDescription(description)
@@ -99,7 +98,7 @@ class Catagory(db.Model):
         db.session.commit()
 
     @classmethod
-    def delete_catagory(cls, catagory_id, created_by_user_id):
+    def delete(cls, catagory_id, created_by_user_id):
         """Delete a catagory."""
         cat = Catagory.get_by_id(catagory_id)
         verifyOwner(cat.created_by_user_id, created_by_user_id)
@@ -122,6 +121,7 @@ class CatagoryItem(db.Model):
     __tablename__ = 'catagory-items'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
+    archived = db.Column(db.Boolean, unique=False, default=False)
     description = db.Column(db.String(500))
     created_by_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     catagory_id = db.Column(db.Integer, db.ForeignKey(Catagory.id))
@@ -130,7 +130,16 @@ class CatagoryItem(db.Model):
     user = db.relationship(User)
 
     @classmethod
-    def create_catagory_item(
+    def get_by_id(cls, item_id):
+        """Return a catagoryitem-object by its id."""
+        item = CatagoryItem.query.filter_by(id=item_id).first()
+        if item:
+            return item
+        raise ValueError(
+            "Could not find an item with id '{}'".format(item_id))
+
+    @classmethod
+    def create(
             cls, name, description, created_by_user_id, catagory_id):
         """Create a catagory-item."""
         verifyName(name)
@@ -142,6 +151,25 @@ class CatagoryItem(db.Model):
             catagory_id=catagory_id
         )
         db.session.add(cat_item)
+        db.session.commit()
+
+    @classmethod
+    def edit(cls, item_id, name, description, created_by_user_id):
+        """Edit an item."""
+        verifyName(name)
+        verifyDescription(description)
+        item = CatagoryItem.get_by_id(item_id)
+        verifyOwner(item.created_by_user_id, created_by_user_id)
+        item.name = name
+        item.description = description
+        db.session.commit()
+
+    @classmethod
+    def delete(cls, item_id, created_by_user_id):
+        """Delete a catagory."""
+        item = CatagoryItem.get_by_id(item_id)
+        verifyOwner(item.created_by_user_id, created_by_user_id)
+        item.archived = True
         db.session.commit()
 
     @property

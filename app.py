@@ -11,7 +11,6 @@ from flask import (
     jsonify,
     render_template
 )
-from flask_misaka import Misaka  # noqa
 from sqlalchemy.orm.exc import NoResultFound
 from flask_dance.contrib.github import (
     make_github_blueprint,
@@ -49,8 +48,6 @@ app.register_blueprint(blueprint, url_prefix="/login")
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
-
-Misaka(app)
 
 
 @login_manager.user_loader
@@ -139,6 +136,7 @@ def view_catalog():
 def json_catalog():
     """Return a json of the catagories, or create a new catagory."""
     print(request.method)
+    print(request.form)
     if request.method == 'POST':
         response = {}
         if not current_user.is_authenticated:
@@ -148,7 +146,7 @@ def json_catalog():
         form_name = request.form['name']
         form_desc = request.form['desc']
         try:
-            Catagory.create_catagory(
+            Catagory.create(
                 name=form_name,
                 description=form_desc,
                 created_by_user_id=current_user.id
@@ -165,7 +163,7 @@ def json_catalog():
 @app.route('/json/catalog/<int:catagory_id>/', methods=[
     'GET', 'POST', 'PUT', 'DELETE'])
 def json_catalog_catagory(catagory_id):
-    """Return a json-object of the items in a catagory."""
+    """Handle JSON-requests for a catagory and its items"""
     response = {}
     print(request.method)
     print(request.form)
@@ -174,11 +172,12 @@ def json_catalog_catagory(catagory_id):
             response['error'] = 'You are not logged in'
             return jsonify(response)
 
+        # Create an item
         if request.method == 'POST':
             form_name = request.form['name']
             form_desc = request.form['desc']
             try:
-                CatagoryItem.create_catagory_item(
+                CatagoryItem.create(
                     name=form_name,
                     description=form_desc,
                     created_by_user_id=current_user.id,
@@ -187,15 +186,15 @@ def json_catalog_catagory(catagory_id):
             except ValueError as e:
                 response['error'] = str(e)
             else:
-                response['success'] = "Successfully edited item '{}'".format(form_name) # noqa
+                response['success'] = "Successfully created item '{}'".format(form_name) # noqa
             return jsonify(response)
 
+        # Edit a catagory
         if request.method == 'PUT':
             form_name = request.form['name']
             form_desc = request.form['desc']
-            catagory_id = request.form['ID']
             try:
-                Catagory.edit_catagory(
+                Catagory.edit(
                     name=form_name,
                     description=form_desc,
                     created_by_user_id=current_user.id,
@@ -207,10 +206,10 @@ def json_catalog_catagory(catagory_id):
                 response['success'] = "Successfully edited catagory '{}'".format(form_name) # noqa
             return jsonify(response)
 
+        # Delete a catagory
         if request.method == 'DELETE':
-            catagory_id = request.form['ID']
             try:
-                Catagory.delete_catagory(
+                Catagory.delete(
                     created_by_user_id=current_user.id,
                     catagory_id=catagory_id
                 )
@@ -222,8 +221,55 @@ def json_catalog_catagory(catagory_id):
 
         response['error'] = 'we post an item'
         return jsonify(response)
-    items = CatagoryItem.query.filter_by(catagory_id=catagory_id).all()
+    items = CatagoryItem.query.filter_by(catagory_id=catagory_id, archived=False).all()
     return jsonify(items=[i.serialize for i in items])
+
+
+@app.route('/json/catalog/<int:catagory_id>/<int:item_id>/', methods=[
+    'GET', 'PUT', 'DELETE'])
+def json_catalog_catagory_items(catagory_id, item_id):
+    """Handle JSON-requests for a items"""
+    response = {}
+    print(request.method)
+    print(request.form)
+    if request.method != 'GET':
+        if False and not current_user.is_authenticated:
+            response['error'] = 'You are not logged in'
+            return jsonify(response)
+
+        # Edit an item
+        if request.method == 'PUT':
+            form_name = request.form['name']
+            form_desc = request.form['desc']
+            try:
+                CatagoryItem.edit(
+                    name=form_name,
+                    description=form_desc,
+                    created_by_user_id=current_user.id,
+                    item_id=item_id
+                )
+            except ValueError as e:
+                response['error'] = str(e)
+            else:
+                response['success'] = "Successfully edited item '{}'".format(form_name) # noqa
+            return jsonify(response)
+
+        # Delete an item
+        if request.method == 'DELETE':
+            try:
+                CatagoryItem.delete(
+                    created_by_user_id=current_user.id,
+                    item_id=item_id
+                )
+            except ValueError as e:
+                response['error'] = str(e)
+            else:
+                response['success'] = 'Successfully deleted catagory'
+            return jsonify(response)
+
+        return jsonify(response)
+    item = CatagoryItem.query.filter_by(catagory_id=catagory_id, id=item_id, archived=False).first() # noqa
+    return jsonify(item.serialize)
 
 
 @app.route('/json/catalog/items/latest/')
@@ -249,7 +295,7 @@ def view_catagory_new():
         catagory_name = request.form['catagory_name']
         catagory_desc = request.form['catagory_desc']
         try:
-            Catagory.create_catagory(
+            Catagory.create(
                 name=catagory_name,
                 description=catagory_desc,
                 created_by_user_id=current_user.id

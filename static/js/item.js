@@ -20,7 +20,7 @@ String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
         return str;
     };
 
-var newItemForm = `<form id={formID} onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
+var newItemForm = `<form onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
 <input type="hidden" name="ID" value="{ID}">
                 <div class="row">
                     <div class="six columns">
@@ -36,7 +36,7 @@ var newItemForm = `<form id={formID} onsubmit="event.preventDefault(); return su
             </form>
 `;
 
-var deleteForm = `<form id={formID} onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
+var deleteForm = `<form onsubmit="event.preventDefault(); return submitForm(this, '{url}', '{hideButton}');" method="{method}">
 <input type="hidden" name="ID" value="{ID}">
                 <div class="row">
                 Are you sure you want to delete this {type}
@@ -105,10 +105,13 @@ function getElementByID(type, catID) {
             elements = items;
             break;
     }
-    for (var i = 0; i < elements.length; i++) {
-        var thisElement = elements[i];
-        if (thisElement.id === parseInt(catID)) {
-            return thisElement;
+    console.log(type);
+    if (elements) {
+        for (var i = 0; i < elements.length; i++) {
+            var thisElement = elements[i];
+            if (thisElement.id === parseInt(catID)) {
+                return thisElement;
+            }
         }
     }
 }
@@ -161,28 +164,14 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
     });
 }
 
-function itemForm(method, url, type, hideButton, showDiv = null, itemID = '') {
-    var formID = ['form', method, type].join('-');
-    if (!showDiv) {
-        showDiv = '#' + formID;
-    }
+function itemForm(method, url, type, hideButton, showDiv = null, itemID = '', name='', desc='') {
     var form = newItemForm;
     switch (method) {
         case 'delete':
             form = deleteForm;
             break;
     }
-    var name = "";
-    var desc = "";
-    if (itemID >= 0) {
-        var thisElement = getElementByID(type, itemID);
-        if (thisElement) {
-            name = thisElement.name;
-            desc = thisElement.description;
-        }
-    }
     return form.formatUnicorn({
-        formID: formID,
         method: method,
         url: url,
         type: type,
@@ -239,12 +228,12 @@ function elementDisplayMore(type, thisDiv, openThis = true, id = -1) {
                 var crud_buttons = thisItem.children('div.crud_buttons');
                 if (type === 'catagory') {
                     addCrudButton(
-                        crud_buttons, 'newitem', formDiv, element.id);
+                        crud_buttons, 'new', 'item', formDiv, element.id);
                 }
                 addCrudButton(
-                    crud_buttons, 'edit' + type, formDiv, element.id);
+                    crud_buttons, 'edit', type, formDiv, element.id);
                 addCrudButton(
-                    crud_buttons, 'delete' + type, formDiv, element.id);
+                    crud_buttons, 'delete', type, formDiv, element.id);
             }
         }
 
@@ -254,36 +243,24 @@ function elementDisplayMore(type, thisDiv, openThis = true, id = -1) {
     }
 }
 
-function addCrudButton(div, request, formDiv, id) {
+function addCrudButton(div, request, type, formDiv, id) {
     var text = '';
     var classes = '';
     switch (request) {
-        case 'newitem':
-            text = 'Add a new item';
+        case 'new':
+            text = 'Add a new ' + type;
             classes = 'fa fa-plus-circle';
             break;
-        case 'edititem':
-            text = 'Edit this item';
+        case 'edit':
+            text = 'Edit this ' + type;
             classes = 'fa fa-plus-circle';
             break;
-        case 'deleteitem':
-            text = 'Delete this item';
-            classes = 'fa fa-plus-circle';
-            break;
-        case 'newcatagory':
-            text = 'Add a new catagory';
-            classes = 'fa fa-plus-circle';
-            break;
-        case 'editcatagory':
-            text = 'Edit this catagory';
-            classes = 'fa fa-trash-o';
-            break;
-        case 'deletecatagory':
-            text = 'Delete this catagory';
+        case 'delete':
+            text = 'Delete this ' + type;
             classes = 'fa fa-plus-circle';
             break;
     }
-    var parameters = [formDiv, request, div.id, id].join('","');
+    var parameters = [formDiv, request, type, div.id, id].join('","');
     jQuery('<div/>', {
         class: 'myButton ' + classes,
         style: 'cursor: pointer;',
@@ -292,38 +269,55 @@ function addCrudButton(div, request, formDiv, id) {
     }).appendTo(div);
 }
 
-function showForm(containerDiv, request, hideButton, itemID = -1, name = "", desc = "") {
+function showForm(containerDiv, request, type, hideButton, elementID = -1) {
     var cDiv = $(containerDiv + ':first');
     cDiv.empty();
     $(hideButton).hide();
     cDiv.show();
     var method = 'post';
-    var type = 'Item';
     var headline = '';
+    var name = '';
+    var desc = '';
     var headlineClasses = '';
-    var url = 'json/catalog/' + itemID + '/';
-    switch (request) {
-        case 'newcatagory':
-            type = 'Catagory';
-            headline = 'Create a new catagory';
-            url = 'json/catalog/';
-            break;
+    var url = 'json/catalog/';
+    var element = getElementByID(type, elementID);
+    switch (request + type) {
         case 'newitem':
-            type = 'Item';
-            headline = 'Create a new item under catagory';
-            break;
         case 'editcatagory':
-            type = 'Catagory';
-            headline = 'Edit catagory';
+        case 'deletecatagory':
+            url += elementID + '/';
+            break;
+        case 'edititem':
+        case 'deleteitem':
+            url += element.catagory_id + '/' + elementID + '/';
+            break;
+    }
+    switch (request + type) {
+        case 'newitem':
+        case 'newcatagory':
+            headline = 'Create a new ' + type;
+            break;
+        case 'edititem':
+            headline = 'Edit an item under catagory';
             method = 'put';
             break;
+        case 'editcatagory':
+            headline = 'Create a new catagory';
+            method = 'put';
+            break;
+        case 'deleteitem':
         case 'deletecatagory':
-            type = 'Catagory';
             headline = 'Delete catagory';
             headlineClasses = 'danger';
             method = 'delete';
             break;
     }
+    console.log(name, request);
+    if (request === 'edit') {
+      name = element.name;
+      desc = element.description;
+    }
+    console.log(name, request);
     jQuery('<h3/>', {
         class: headlineClasses,
         text: headline
@@ -334,7 +328,7 @@ function showForm(containerDiv, request, hideButton, itemID = -1, name = "", des
         type = type,
         hideButton = hideButton,
         showDiv = containerDiv,
-        itemID = itemID,
+        itemID = elementID,
         name = name,
         desc = name
     ));
