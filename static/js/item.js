@@ -222,7 +222,7 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
 // Lazy check if user is logged in. (server check all input, so no worries)
 function userLoggedIn() {
     if ($('#logged_in').length > 0) {
-        return true;
+        return $('#logged_in').html();
     }
 }
 // Expand the selected catagory, and retrieve subitems.
@@ -275,10 +275,12 @@ function elementDisplayMore(type, thisDiv, openThis = true, id = -1) {
                     addCrudButton(
                         crud_buttons, 'new', 'item', formDiv, element.id);
                 }
-                addCrudButton(
-                    crud_buttons, 'edit', type, formDiv, element.id);
-                addCrudButton(
-                    crud_buttons, 'delete', type, formDiv, element.id);
+                if (userLoggedIn() == element.created_by_user_id) {
+                  addCrudButton(
+                      crud_buttons, 'edit', type, formDiv, element.id);
+                  addCrudButton(
+                      crud_buttons, 'delete', type, formDiv, element.id);
+                }
             }
         }
         $('html, body').animate({
