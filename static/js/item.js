@@ -45,6 +45,25 @@ var deleteForm = `<form onsubmit="event.preventDefault(); return submitForm(this
                 <input class="button-danger u-pull-right" type="submit" value="Yes, delete this">
             </form>
 `;
+
+function itemForm(method, url, type, hideButton, showDiv = null, itemID = '', name='', desc='') {
+    var form = newItemForm;
+    switch (method) {
+        case 'delete':
+            form = deleteForm;
+            break;
+    }
+    return form.formatUnicorn({
+        method: method,
+        url: url,
+        type: type,
+        hideButton: hideButton,
+        showDiv: showDiv,
+        ID: itemID,
+        name: name,
+        desc: desc
+    });
+}
 var items;
 
 // Retrieve items from server
@@ -161,25 +180,6 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                 }).appendTo(thisContainer);
             }
         }
-    });
-}
-
-function itemForm(method, url, type, hideButton, showDiv = null, itemID = '', name='', desc='') {
-    var form = newItemForm;
-    switch (method) {
-        case 'delete':
-            form = deleteForm;
-            break;
-    }
-    return form.formatUnicorn({
-        method: method,
-        url: url,
-        type: type,
-        hideButton: hideButton,
-        showDiv: showDiv,
-        ID: itemID,
-        name: name,
-        desc: desc
     });
 }
 // Lazy check if user is logged in. (server check all input, so no worries)
