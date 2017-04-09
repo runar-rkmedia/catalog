@@ -282,7 +282,36 @@ login_manager.init_app(app)
 if __name__ == "__main__":
     if "--setup" in sys.argv:
         with app.app_context():
+            # Create database-structure, and add som default-data.
             db.create_all()
+            db.session.add(User(
+                username='Jimmy',
+                email='jimmy@example.com',
+                full_name='Jimmy Joe'))
+            db.session.add(Catagory(
+                name='Snowboarding',
+                description='A really __cool__ activity.',
+                created_by_user_id=1))
+            db.session.add(Catagory(
+                name='Skating',
+                description='**Tony Hawk** does it',
+                created_by_user_id=1))
+            db.session.add(CatagoryItem(
+                name='Snow',
+                description='You need this to ride on',
+                catagory_id=1,
+                created_by_user_id=1))
+            db.session.add(CatagoryItem(
+                name='Boots',
+                description="Otherwise you'll fall off",
+                catagory_id=1,
+                created_by_user_id=1))
+            db.session.commit()
+            db.session.add(CatagoryItem(
+                name='Board with wheels',
+                description="Get moving",
+                catagory_id=2,
+                created_by_user_id=1))
             db.session.commit()
             print("Database tables created")
     else:

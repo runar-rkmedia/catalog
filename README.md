@@ -1,25 +1,20 @@
-## Notes
+# Item Catalog
 
-
-### Extensions:
--Flash-RESTful or Flask-Restless.
--Flask-Testing
-
-[Flask extensions](http://flask.pocoo.org/extensions/)
+A Udacity assignment about OAuth and AJAX.
 
 ## Requirements:
 
 ```Shell
-pip freeze > requirements.txt
 pip install -r requirements.txt
 ```
 
-# Choices made
+## Choices made
 
 - `flask-dance` to easily set up OAuth-providers.
 - Single-Page App(SPA) with ajax-calls to server, and rendering as much as possible in jquery.
-- Markdown is supported as input for the description-field in both catagory and items, but for sequrity, html is not. The input is cleaned using `bleach`, and then parsed to markdown before being stored on the server. Doing this in the database is a lot faster than parsing it on the fly. However, it is not as flexible.
+- Markdown is supported as input for the description-field in both catagory and items, but for sequrity, html is not. The input is cleaned using `bleach`. The markdown is parsed with javascript.
 
+# Instructions to run the project
 ## Setting up the database
 
 You can create the database with the following command:
@@ -31,7 +26,7 @@ python app.py --setup
 
 Because I don't want to store my config-files with my secrets publicly on github, you will have to create your own. But don't worry, it is not much work.
 Create a folder called `instance` and within the folder, create a file called `config.cfg`. Put this into that file:
-GitHubGitHubGitHub
+
 ```INI
 TESTING=False
 DEBUG=True
@@ -47,3 +42,5 @@ TWITTER_API_SECRET="your_key_here"
 export FLASK_APP=app.py
 flask run
 ```
+
+It should now be up and running.
