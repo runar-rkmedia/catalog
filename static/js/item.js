@@ -300,7 +300,7 @@ function showForm(containerDiv, request, type, hideButton, elementID = -1) {
             method = 'put';
             break;
         case 'editcatagory':
-            headline = 'Create a new catagory';
+            headline = 'Edit catagory';
             method = 'put';
             break;
         case 'deleteitem':
@@ -326,7 +326,7 @@ function showForm(containerDiv, request, type, hideButton, elementID = -1) {
         showDiv = containerDiv,
         itemID = elementID,
         name = name,
-        desc = name
+        desc = desc
     ));
 }
 

@@ -164,111 +164,84 @@ def json_catalog():
     'GET', 'POST', 'PUT', 'DELETE'])
 def json_catalog_catagory(catagory_id):
     """Handle JSON-requests for a catagory and its items"""
-    response = {}
-    print(request.method)
-    print(request.form)
-    if request.method != 'GET':
-        if not current_user.is_authenticated:
-            response['error'] = 'You are not logged in'
-            return jsonify(response)
+    # Create an item
+    if request.method == 'POST':
+        form_name = request.form['name']
+        form_desc = request.form['desc']
+        return update_DB_output_json(
+            success_msg="Successfully created item '{}'".format(form_name),
+            func=CatagoryItem.create,
+            name=form_name,
+            description=form_desc,
+            created_by_user_id=current_user.id,
+            catagory_id=catagory_id
+        )
 
-        # Create an item
-        if request.method == 'POST':
-            form_name = request.form['name']
-            form_desc = request.form['desc']
-            try:
-                CatagoryItem.create(
-                    name=form_name,
-                    description=form_desc,
-                    created_by_user_id=current_user.id,
-                    catagory_id=catagory_id
-                )
-            except ValueError as e:
-                response['error'] = str(e)
-            else:
-                response['success'] = "Successfully created item '{}'".format(form_name) # noqa
-            return jsonify(response)
+    # Edit a catagory
+    if request.method == 'PUT':
+        form_name = request.form['name']
+        form_desc = request.form['desc']
+        return update_DB_output_json(
+            success_msg="Successfully edited catagory '{}'".format(form_name),
+            func=Catagory.edit,
+            name=form_name,
+            description=form_desc,
+            created_by_user_id=current_user.id,
+            catagory_id=catagory_id
+        )
 
-        # Edit a catagory
-        if request.method == 'PUT':
-            form_name = request.form['name']
-            form_desc = request.form['desc']
-            try:
-                Catagory.edit(
-                    name=form_name,
-                    description=form_desc,
-                    created_by_user_id=current_user.id,
-                    catagory_id=catagory_id
-                )
-            except ValueError as e:
-                response['error'] = str(e)
-            else:
-                response['success'] = "Successfully edited catagory '{}'".format(form_name) # noqa
-            return jsonify(response)
+    # Delete a catagory
+    if request.method == 'DELETE':
+        return update_DB_output_json(
+            success_msg="Successfully deleted catagory",
+            func=Catagory.delete,
+            created_by_user_id=current_user.id,
+            catagory_id=catagory_id
+        )
 
-        # Delete a catagory
-        if request.method == 'DELETE':
-            try:
-                Catagory.delete(
-                    created_by_user_id=current_user.id,
-                    catagory_id=catagory_id
-                )
-            except ValueError as e:
-                response['error'] = str(e)
-            else:
-                response['success'] = 'Successfully deleted catagory'
-            return jsonify(response)
-
-        response['error'] = 'we post an item'
-        return jsonify(response)
-    items = CatagoryItem.query.filter_by(catagory_id=catagory_id, archived=False).all()
+    items = CatagoryItem.query.filter_by(
+        catagory_id=catagory_id, archived=False).all()
     return jsonify(items=[i.serialize for i in items])
+
+
+def update_DB_output_json(success_msg, func, **kwargs):
+    """."""
+    response = {}
+    try:
+        func(**kwargs)
+    except ValueError as e:
+        response['error'] = str(e)
+    else:
+        response['success'] = success_msg  # noqa
+    return jsonify(response)
 
 
 @app.route('/json/catalog/<int:catagory_id>/<int:item_id>/', methods=[
     'GET', 'PUT', 'DELETE'])
 def json_catalog_catagory_items(catagory_id, item_id):
     """Handle JSON-requests for a items"""
-    response = {}
-    print(request.method)
-    print(request.form)
-    if request.method != 'GET':
-        if False and not current_user.is_authenticated:
-            response['error'] = 'You are not logged in'
-            return jsonify(response)
-
-        # Edit an item
-        if request.method == 'PUT':
-            form_name = request.form['name']
-            form_desc = request.form['desc']
-            try:
-                CatagoryItem.edit(
-                    name=form_name,
-                    description=form_desc,
-                    created_by_user_id=current_user.id,
-                    item_id=item_id
-                )
-            except ValueError as e:
-                response['error'] = str(e)
-            else:
-                response['success'] = "Successfully edited item '{}'".format(form_name) # noqa
-            return jsonify(response)
-
-        # Delete an item
-        if request.method == 'DELETE':
-            try:
-                CatagoryItem.delete(
-                    created_by_user_id=current_user.id,
-                    item_id=item_id
-                )
-            except ValueError as e:
-                response['error'] = str(e)
-            else:
-                response['success'] = 'Successfully deleted catagory'
-            return jsonify(response)
-
-        return jsonify(response)
-    item = CatagoryItem.query.filter_by(catagory_id=catagory_id, id=item_id, archived=False).first() # noqa
+    # Edit an item
+    if request.method == 'PUT':
+        form_name = request.form['name']
+        form_desc = request.form['desc']
+        return update_DB_output_json(
+            success_msg="Successfully edited item '{}'".format(form_name),
+            func=CatagoryItem.edit,
+            name=form_name,
+            description=form_desc,
+            created_by_user_id=current_user.id,
+            item_id=item_id
+        )
+    # Delete an item
+    if request.method == 'DELETE':
+        return update_DB_output_json(
+            success_msg="Successfully deleted catagory",
+            func=CatagoryItem.delete,
+            created_by_user_id=current_user.id,
+            item_id=item_id
+        )
+    # Get json-info
+    item = CatagoryItem.query.filter_by(catagory_id=catagory_id, id=item_id, archived=False).first()  # noqa
     return jsonify(item.serialize)
 
 
