@@ -46,10 +46,17 @@ var deleteForm = `<form id={formID} onsubmit="event.preventDefault(); return sub
             </form>
 `;
 
-function itemForm(method, url, type, hideButton, showDiv = null, itemID=-1) {
+function getCatagoryByID(catID) {
+  for (var i = 0; i < catagories.length; i++) {
+    var thisElement = catagories[i];
+    if (thisElement.id === parseInt(catID)) {
+      return thisElement;
+    }
+  }
+}
+
+function itemForm(method, url, type, hideButton, showDiv = null, itemID='') {
     var formID = ['form', method, type].join('-');
-    console.log('itemFormname',name);
-    console.log('itemFormdesc',desc);
     if (!showDiv) {
         showDiv = '#' + formID;
     }
@@ -61,21 +68,15 @@ function itemForm(method, url, type, hideButton, showDiv = null, itemID=-1) {
     }
     var name = "";
     var desc = "";
-    if (type==='Catagory') {
-      console.log(catagories);
-      for (var i = 0; i < catagories.length; i++) {
-        var thisElement = catagories[i];
-        console.log(thisElement.id, itemID);
-        if (thisElement.id === parseInt(itemID)) {
-          console.log('success', thisElement.id, itemID);
+    if (itemID >= 0) {
+      if (type==='Catagory') {
+        var thisElement = getCatagoryByID(itemID);
+        if (thisElement) {
           name = thisElement.name;
           desc = thisElement.description;
-          console.log(name, desc);
         }
-      }
     }
-
-    console.log('element', name);
+    }
     return form.formatUnicorn({
         formID: formID,
         method: method,
@@ -100,13 +101,26 @@ function catagoryDisplayMore(index, type, id, thisDiv) {
         }).appendTo(thisDiv);
         getItems('/json/catalog/' + id, $('#' + newDivID));
     }
+    var formDiv = thisDiv + ' .form';
+    var catagory = getCatagoryByID(id);
+    var descDiv = thisItem.children('div.catagory-desc');
+    if (descDiv.is(':empty')) {
+      descDiv.html(markdown.toHTML(catagory.description));
+
+      var crud_buttons = thisItem.children('div.crud_buttons');
+
+      addCrudButton(
+        crud_buttons, 'newItem', formDiv, catagory.id, index);
+        addCrudButton(
+          crud_buttons, 'editCatagory', formDiv, catagory.id, index);
+          addCrudButton(
+            crud_buttons, 'deleteCatagory', formDiv, catagory.id, index);
+    }
 }
 
 // Expand the selected item.
 function itemDisplayMore(type, thisDiv, openThis = true) {
-    console.log(thisDiv);
     var thisItem = $(thisDiv);
-    console.log(thisItem);
     thisItem.parent().children().removeClass(type + '-expand');
     thisItem.parent().children().children('div.item-more').css('display', 'none');
     thisItem.parent().children().children('div.item-close').css('display', 'none');
@@ -176,9 +190,7 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
             }).appendTo(div);
             var containerDiv = div.find('div.catagories');
             for (var i = 0; i < result.catagories.length; i++) {
-                var newFormDiv = 'new-item-form-div-' + i;
-                var editFormDiv = 'edit-item-form-div-' + i;
-                var deleteFormDiv = 'delete-item-form-div-' + i;
+                var formDiv = 'new-item-form-div-' + i;
                 catagory = result.catagories[i];
                 var thisID = 'catagory-' + i;
 
@@ -186,7 +198,7 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                     id: thisID,
                     class: 'catagory tile',
                 }).appendTo(containerDiv);
-                var thisContainer = containerDiv.find('#' + thisID);
+                var thisContainer = containerDiv.children('#' + thisID);
 
                 jQuery('<div/>', {
                     class: 'catagory-name',
@@ -201,29 +213,17 @@ function getCatagories(url = '/json/catalog/', div = $('.catag')) {
                         ');'
                 }).appendTo(thisContainer);
 
-                // TODO: only parse when showing item
-
                 jQuery('<div/>', {
                     class: 'catagory-desc item-more no-display',
-                    html: markdown.toHTML(catagory.description)
                 }).appendTo(thisContainer);
 
                 jQuery('<div/>', {
                     class: 'crud_buttons item-more no-display'
                 }).appendTo(thisContainer);
 
-                var crud_buttons = thisContainer.children('div.crud_buttons');
-
-                addCrudButton(
-                    crud_buttons, 'newItem', newFormDiv, catagory.id, i);
-                addCrudButton(
-                    crud_buttons, 'editCatagory', newFormDiv, catagory.id, i);
-                addCrudButton(
-                    crud_buttons, 'deleteCatagory', newFormDiv, catagory.id, i);
-
                 jQuery('<div/>', {
-                    id: newFormDiv,
-                    class: 'add-item item-more no-display'
+                  id: formDiv,
+                  class: 'add-item form item-more no-display'
                 }).appendTo(thisContainer);
             }
         }
@@ -246,7 +246,7 @@ function addCrudButton(div, request, formDiv, id, i) {
             break;
     }
     var thisID = request + '-' + i;
-    var parameters = ['#' + formDiv, request, '#' + thisID, id].join('","');
+    var parameters = [formDiv, request, div.id , id].join('","');
     jQuery('<div/>', {
         id: thisID,
         class: 'myButton ' + classes,
@@ -312,13 +312,6 @@ function hideMeShowOther(thisButton, targetForm) {
             $(targetForm).hide();
             $(thisButton).show();
         }
-        // if (!$(targetForm).length >0 ) {
-        //   console.log('did not find targetForm:' + targetForm);
-        // }
-        // if (!$(thisButton).length >0 ) {
-        //   console.log('did not find thisButton:' + thisButton);
-        // }
-        // $(thisButton).css('background-color: red;');
         // $("input:text:visible:first").focus();
     });
 }
