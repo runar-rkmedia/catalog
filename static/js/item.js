@@ -45,10 +45,22 @@ var deleteForm = `<form id={formID} onsubmit="event.preventDefault(); return sub
                 <input class="button-danger u-pull-right" type="submit" value="Yes, delete this">
             </form>
 `;
+var items;
+
+function getItemsByID(itemID) {
+    for (var i = 0; i < items.length; i++) {
+        var thisElement = items[i];
+        if (thisElement.id === parseInt(itemID)) {
+            return thisElement;
+        }
+    }
+}
 // Retrieve items from server
 function getItems(url, div) {
     $.getJSON(url, function(result) {
+        console.log(result);
         if (result.items.length > 0) {
+            items = result.items;
             jQuery('<div/>', {
                 class: 'items tiles',
             }).appendTo(div);
@@ -65,7 +77,7 @@ function getItems(url, div) {
                 jQuery('<div/>', {
                     class: 'item-name',
                     style: 'cursor: pointer;',
-                    onclick: 'itemDisplayMore("item","#item-' + i + '");',
+                    onclick: 'elementDisplayMore("item","#item-' + i + '");',
                     text: item.name
                 }).appendTo(thisDiv);
 
@@ -96,8 +108,8 @@ function getCatagoryByID(catID) {
 function getCatagories(url = '/json/catalog/', div = $('.catag')) {
     div.empty();
     $.getJSON(url, function(result) {
-        catagories = result.catagories;
         if (result.catagories.length > 0) {
+            catagories = result.catagories;
             jQuery('<div/>', {
                 class: 'catagories tiles',
             }).appendTo(div);
@@ -177,12 +189,19 @@ function itemForm(method, url, type, hideButton, showDiv = null, itemID = '') {
         desc: desc
     });
 }
+// Lazy check if user is logged in. (server check all input, so no worries)
+function userLoggedIn() {
+  if ($('#logged_in').length > 0) {
+    return true;
+  }
+}
 // Expand the selected catagory, and retrieve subitems.
-function catagoryDisplayMore(index, type, id, thisDiv) {
-    itemDisplayMore(type, thisDiv);
+function catagoryDisplayMore(index, type, id, thisDiv, refresh = false) {
+    elementDisplayMore(type, thisDiv);
     var thisItem = $(thisDiv);
     var newDivID = 'catagory-' + index + '-items';
-    if (document.getElementById(newDivID) === null) {
+    if (refresh || document.getElementById(newDivID) === null) {
+        console.log('retrieving items');
         jQuery('<div/>', {
             id: newDivID = newDivID,
             class: 'item-more'
@@ -195,19 +214,22 @@ function catagoryDisplayMore(index, type, id, thisDiv) {
     if (descDiv.is(':empty')) {
         descDiv.html(markdown.toHTML(catagory.description));
 
-        var crud_buttons = thisItem.children('div.crud_buttons');
-        //  TODO: Only show buttons when logged in.
-        addCrudButton(
+        if (userLoggedIn()) {
+          var crud_buttons = thisItem.children('div.crud_buttons');
+
+          //  TODO: Only show buttons when logged in.
+          addCrudButton(
             crud_buttons, 'newItem', formDiv, catagory.id, index);
-        addCrudButton(
-            crud_buttons, 'editCatagory', formDiv, catagory.id, index);
-        addCrudButton(
-            crud_buttons, 'deleteCatagory', formDiv, catagory.id, index);
+            addCrudButton(
+              crud_buttons, 'editCatagory', formDiv, catagory.id, index);
+              addCrudButton(
+                crud_buttons, 'deleteCatagory', formDiv, catagory.id, index);
+        }
     }
 }
 
 // Expand the selected item.
-function itemDisplayMore(type, thisDiv, openThis = true) {
+function elementDisplayMore(type, thisDiv, openThis = true) {
     var thisItem = $(thisDiv);
     thisItem.parent().children().removeClass(type + '-expand');
     thisItem.parent().children().children('div.item-more').css('display', 'none');
@@ -219,7 +241,7 @@ function itemDisplayMore(type, thisDiv, openThis = true) {
             jQuery('<div/>', {
                 class: 'fa fa-close button-close  item-more u-pull-right',
                 style: 'cursor: pointer;',
-                onclick: 'itemDisplayMore("' + type + '","#' + thisItem.attr('id') + '", openThis=false);'
+                onclick: 'elementDisplayMore("' + type + '","#' + thisItem.attr('id') + '", openThis=false);'
             }).prependTo(thisItem);
         }
 
