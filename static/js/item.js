@@ -122,7 +122,6 @@ function getElementByID(type, catID) {
             elements = items;
             break;
     }
-    console.log(type);
     if (elements) {
         for (var i = 0; i < elements.length; i++) {
             var thisElement = elements[i];
@@ -310,12 +309,10 @@ function showForm(containerDiv, request, type, hideButton, elementID = -1) {
             method = 'delete';
             break;
     }
-    console.log(name, request);
     if (request === 'edit') {
       name = element.name;
       desc = element.description;
     }
-    console.log(name, request);
     jQuery('<h3/>', {
         class: headlineClasses,
         text: headline
