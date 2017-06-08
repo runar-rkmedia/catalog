@@ -6,11 +6,6 @@ class BaseConfig(object):
     """Base Config."""
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL', 'sqlite://')
-    # In production, a truly random key shoud be stored in a production-config,
-    # which will override this. For dev-purposes, just use 'dev' as secret key.
-    SECRET_KEY = 'dev'
 
 
 class DevelopmentConfig(BaseConfig):

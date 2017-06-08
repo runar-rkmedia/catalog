@@ -41,7 +41,7 @@ configure_app(app)
 blueprint = make_github_blueprint(
     client_id=app.config['GITHUB_CLIENT_ID'],
     client_secret=app.config['GITHUB_CLIENT_SECRET'],
-    scope='user:email',
+    scope=['user:email'],
 )
 app.register_blueprint(blueprint, url_prefix="/login")
 
