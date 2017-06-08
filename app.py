@@ -311,3 +311,5 @@ if __name__ == "__main__":
         if app.debug:
             # setup scss-folders
             Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
+
+app.run()
