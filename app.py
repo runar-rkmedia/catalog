@@ -312,4 +312,4 @@ if __name__ == "__main__":
             # setup scss-folders
             Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
 
-app.run()
+        app.run()
