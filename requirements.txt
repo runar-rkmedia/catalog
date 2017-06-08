@@ -21,6 +21,7 @@ lazy==1.3
 MarkupSafe==1.0
 misaka==2.1.0
 oauthlib==2.0.2
+psycopg2==2.7.1
 pycparser==2.17
 pyScss==1.3.5
 python-dateutil==2.6.0
